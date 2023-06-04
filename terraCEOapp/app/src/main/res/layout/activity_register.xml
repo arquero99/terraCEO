@@ -28,7 +28,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/user" />
 
-    <EditText
+    <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/RegisterEmail"
         android:layout_width="match_parent"
         android:layout_height="49dp"
@@ -42,7 +42,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
-    <EditText
+    <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/RegisterPassword"
         android:layout_width="match_parent"
         android:layout_height="49dp"
@@ -55,15 +55,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/RegisterEmail" />
-
-    <ProgressBar
-        android:id="@+id/progressBarReg"
-        android:visibility="gone"
-        android:layout_width="match_parent"
-        app:layout_constraintBottom_toBottomOf="@+id/register2"
-        app:layout_constraintStart_toStartOf="@+id/register2"
-        app:layout_constraintEnd_toEndOf="@+id/register2"
-        android:layout_height="wrap_content"/>
 
     <Button
         android:id="@+id/register2"

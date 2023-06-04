@@ -25,17 +25,14 @@ public class RegisterActivity extends AppCompatActivity {
     TextInputEditText editTextEmail, editTextPassword;
     Button buttonReg;
     FirebaseAuth mAuth;
-    ProgressBar progressBar;
     TextView textView;
 
-    public void onStart() {
-        super.onStart();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser != null){
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-            startActivity(intent);
-            finish();
-        }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Realizar el log out aquí
+        FirebaseAuth.getInstance().signOut();
+        // Otros pasos necesarios para cerrar sesión en tu aplicación
     }
 
     @Override
@@ -43,10 +40,9 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         mAuth = FirebaseAuth.getInstance();
-        editTextEmail = this.<TextInputEditText>findViewById(R.id.RegisterEmail);
+        editTextEmail = findViewById(R.id.RegisterEmail);
         editTextPassword = this.<TextInputEditText>findViewById(R.id.RegisterPassword);
         buttonReg = findViewById(R.id.register2);
-        progressBar = findViewById(R.id.progressBarReg);
         textView = findViewById(R.id.loginNow);
 
         textView.setOnClickListener(new View.OnClickListener() {
@@ -61,10 +57,9 @@ public class RegisterActivity extends AppCompatActivity {
         buttonReg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progressBar.setVisibility(View.VISIBLE);
                 String email, password;
-                email = String.valueOf(editTextEmail.toString());
-                password = String.valueOf(editTextPassword.toString());
+                email = editTextEmail.getText().toString();
+                password = editTextPassword.getText().toString();
 
                 if(TextUtils.isEmpty(email)){
                     Toast.makeText(RegisterActivity.this, "Enter email", Toast.LENGTH_SHORT).show();
@@ -79,7 +74,6 @@ public class RegisterActivity extends AppCompatActivity {
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
-                                progressBar.setVisibility(View.GONE);
                                 if (task.isSuccessful()) {
                                     Toast.makeText(RegisterActivity.this, "Account created.",
                                             Toast.LENGTH_SHORT).show();

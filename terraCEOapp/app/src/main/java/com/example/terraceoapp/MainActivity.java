@@ -10,6 +10,8 @@ import android.location.LocationManager;
 import android.os.Bundle;
 
 //
+import com.google.firebase.auth.FirebaseAuth;
+
 import org.osmdroid.config.Configuration;
 import org.osmdroid.mapsforge.BuildConfig;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
@@ -29,6 +31,14 @@ public class MainActivity extends AppCompatActivity {
 
     List<Location> listaLocalizaciones = new ArrayList<>();
     List<GeoPoint> puntosRuta = new ArrayList<>();
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Realizar el log out aquí
+        FirebaseAuth.getInstance().signOut();
+        // Otros pasos necesarios para cerrar sesión en tu aplicación
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

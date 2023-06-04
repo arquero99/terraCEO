@@ -24,7 +24,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/user" />
 
-    <EditText
+    <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/LoginEmail"
         android:layout_width="match_parent"
         android:layout_height="49dp"
@@ -38,7 +38,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
-    <EditText
+    <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/LoginPassword"
         android:layout_width="match_parent"
         android:layout_height="49dp"
@@ -52,15 +52,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/LoginEmail" />
 
-    <ProgressBar
-        android:id="@+id/progressBarLog"
-        android:visibility="gone"
-        android:layout_width="match_parent"
-        app:layout_constraintBottom_toBottomOf="@+id/register1"
-        app:layout_constraintStart_toStartOf="@+id/register1"
-        app:layout_constraintEnd_toEndOf="@+id/register1"
-        android:layout_height="wrap_content"/>
-
     <Button
         android:id="@+id/login"
         android:layout_width="match_parent"
@@ -72,18 +63,20 @@
         android:background="@drawable/button_rounded"
         android:text="@string/login" />
 
-    <Button
-        android:id="@+id/register1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <TextView
+        android:id="@+id/RegisterNow"
+        android:layout_width="241dp"
+        android:layout_height="32dp"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
-        android:text="@string/LoginToRegister"
+        android:gravity="center"
+        android:text="@string/don_t_have_an_account"
+        android:textSize="18dp"
+        android:background="@drawable/button_rounded_border"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/login"
-        android:background="@drawable/button_rounded_border"/>
+        app:layout_constraintTop_toBottomOf="@+id/login" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
