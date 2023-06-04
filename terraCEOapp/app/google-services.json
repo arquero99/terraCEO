@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "56954372259",
+    "project_id": "terraceo-37337",
+    "storage_bucket": "terraceo-37337.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:56954372259:android:fcc42f233c5c392d7fff16",
+        "android_client_info": {
+          "package_name": "com.example.terraceoapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "56954372259-58k9b204l8vubk95umgli8rpll2n6u1s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHarSto_CJPJQOLehtaZOcc3U9Q-0iqlw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "56954372259-58k9b204l8vubk95umgli8rpll2n6u1s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
