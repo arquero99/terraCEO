@@ -1,17 +1,93 @@
 package com.example.terraceoapp;
 
-import android.os.Bundle;
-
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class LoginActivity extends AppCompatActivity {
+    TextInputEditText editTextEmail, editTextPassword;
+    Button buttonLog, buttonReg;
+    FirebaseAuth mAuth;
+    ProgressBar progressBar;
+/*
+    @Override
+    public void onStart() {
+        super.onStart();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if(currentUser != null){
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
+    }*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Código adicional para la actividad de inicio de sesión
-        // ...
+        mAuth = FirebaseAuth.getInstance();
+        editTextEmail = this.findViewById(R.id.LoginEmail);
+        editTextPassword = this.findViewById(R.id.LoginPassword);
+        buttonLog = findViewById(R.id.login);
+        buttonReg = findViewById(R.id.register1);
+        progressBar = findViewById(R.id.progressBarLog);
+
+        buttonReg.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), RegisterActivity.class);
+            startActivity(intent);
+            finish();
+        });
+
+        buttonLog.setOnClickListener(v -> {
+            progressBar.setVisibility(View.VISIBLE);
+            String email, password;
+            email = editTextEmail.toString();
+            password = editTextPassword.toString();
+
+            if(TextUtils.isEmpty(email)){
+                Toast.makeText(LoginActivity.this, "Enter email", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if(TextUtils.isEmpty(password)){
+                Toast.makeText(LoginActivity.this, "Enter password", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            mAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(task -> {
+                        progressBar.setVisibility(View.GONE);
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Toast.makeText(getApplicationContext(), "Login Successful", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Toast.makeText(LoginActivity.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        });
+
+
+
     }
 }

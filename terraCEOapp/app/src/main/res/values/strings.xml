@@ -2,4 +2,8 @@
     <string name="app_name">terraCEOapp</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="click_to_login">click to Login</string>
+    <string name="LoginToRegister">Register</string>
 </resources>
