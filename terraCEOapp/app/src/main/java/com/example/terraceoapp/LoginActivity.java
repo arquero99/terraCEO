@@ -30,6 +30,7 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
+        mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser != null){
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
@@ -61,8 +62,8 @@ public class LoginActivity extends AppCompatActivity {
 
         buttonLog.setOnClickListener(v -> {
             String email, password;
-            email = editTextEmail.toString();
-            password = editTextPassword.toString();
+            email = editTextEmail.getText().toString();
+            password = editTextPassword.getText().toString();
 
             if(TextUtils.isEmpty(email)){
                 Toast.makeText(LoginActivity.this, "Enter email", Toast.LENGTH_SHORT).show();
