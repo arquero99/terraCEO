@@ -2,11 +2,13 @@
 //Este metodo realiza la llamada a la api
 //GET /api/plugins/telemetry/{entityType}/{entityId}/values/timeseries{?keys,useStrictDataTypes} Get latest time-series value (getLatestTimeseries)
 
-public class Device
+public abstract class Device
 {
     private String id;
     private String name;
     private String type;
+
+    private Location position;
 
     Device(String value){
         this.id=value;
@@ -39,5 +41,5 @@ public class Device
         this.name=value;
     }
 
-    
+    public abstract void updateDevice();
 }
