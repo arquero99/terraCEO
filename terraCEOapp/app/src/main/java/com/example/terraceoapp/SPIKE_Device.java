@@ -60,7 +60,88 @@ public class SPIKE_Device extends Device {
 
     @Override
     public void updateDevice() {
-        // Implementación específica para SPIKE_Device
-        // Actualizar dispositivo SPIKE
+        String url = "https://thingsboard.cloud:443/api/plugins/telemetry/DEVICE/" + this.getId() + "/values/timeseries?useStrictDataTypes=false";
+        String token =  //Obtener de DeviceManager;
+
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer " + token)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    try {
+                        JSONObject json = new JSONObject(responseBody);
+
+                        JSONArray latitudeArray = json.getJSONArray("latitude");
+                        if (latitudeArray.length() > 0) {
+                            JSONObject latitudeObject = latitudeArray.getJSONObject(0);
+                            double latitudeValue = latitudeObject.getDouble("value");
+                            setLatitude(latitudeValue);
+                        }
+
+                        JSONArray longitudeArray = json.getJSONArray("longitude");
+                        if (longitudeArray.length() > 0) {
+                            JSONObject longitudeObject = longitudeArray.getJSONObject(0);
+                            double longitudeValue = longitudeObject.getDouble("value");
+                            setLongitude(longitudeValue);
+                        }
+
+                        // Actualiza las demás variables según el formato del JSON
+
+                        JSONArray soilHumidityArray = json.getJSONArray("soilHumidity");
+                        if (soilHumidityArray.length() > 0) {
+                            JSONObject soilHumidityObject = soilHumidityArray.getJSONObject(0);
+                            double soilHumidityValue = soilHumidityObject.getDouble("value");
+                            setSoilHumidity(soilHumidityValue);
+                        }
+
+                        JSONArray airTemperatureArray = json.getJSONArray("airTemperature");
+                        if (airTemperatureArray.length() > 0) {
+                            JSONObject airTemperatureObject = airTemperatureArray.getJSONObject(0);
+                            double airTemperatureValue = airTemperatureObject.getDouble("value");
+                            setAirTemperature(airTemperatureValue);
+                        }
+
+                        JSONArray soilTemperatureArray = json.getJSONArray("soilTemperature");
+                        if (soilTemperatureArray.length() > 0) {
+                            JSONObject soilTemperatureObject = soilTemperatureArray.getJSONObject(0);
+                            double soilTemperatureValue = soilTemperatureObject.getDouble("value");
+                            setSoilTemperature(soilTemperatureValue);
+                        }
+
+                        JSONArray luminosityArray = json.getJSONArray("luminosity");
+                        if (luminosityArray.length() > 0) {
+                            JSONObject luminosityObject = luminosityArray.getJSONObject(0);
+                            double luminosityValue = luminosityObject.getDouble("value");
+                            setLuminosity(luminosityValue);
+                        }
+
+                        JSONArray airHumidityArray = json.getJSONArray("airHumidity");
+                        if (airHumidityArray.length() > 0) {
+                            JSONObject airHumidityObject = airHumidityArray.getJSONObject(0);
+                            double airHumidityValue = airHumidityObject.getDouble("value");
+                            setAirHumidity(airHumidityValue);
+                        }
+
+                        // Resto del procesamiento de los datos del JSON
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
+
 }
