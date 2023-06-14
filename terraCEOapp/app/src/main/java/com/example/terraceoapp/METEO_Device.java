@@ -57,7 +57,7 @@ public class METEO_Device extends Device {
     @Override
     public void updateDevice() {
         String url = "https://thingsboard.cloud:443/api/plugins/telemetry/DEVICE/" + this.getId() + "/values/timeseries?useStrictDataTypes=false";
-        String token = ;//COJER de device manager creado con info de login.
+        String token = ;//Obetener de device manager creado con info de login.
 
         OkHttpClient client = new OkHttpClient();
 

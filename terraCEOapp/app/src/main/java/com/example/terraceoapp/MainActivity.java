@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Crear una lista de ubicaciones (incluyendo el punto de inicio y la ubicación actual)
         listaLocalizaciones.add(new Location(40.38999, -3.65518));
-        listaLocalizaciones.add(locActual);
+        listaLocalizaciones.add(locActual);1
 
         // Agregar marcadores y puntos de ruta para cada ubicación en la lista
         for (Location loc : listaLocalizaciones) {

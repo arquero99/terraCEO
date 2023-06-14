@@ -30,7 +30,7 @@ public class SPIKE_Device extends Device {
         return airTemperature;
     }
 
-    public void setAirTemperature(double airTemperature) {
+    public void setAirTemperature(double airTemperature) {1
         this.airTemperature = airTemperature;
     }
 

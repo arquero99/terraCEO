@@ -55,7 +55,7 @@ public class WSN_Device extends Device {
     @Override
     public void updateDevice() {
         String url = "https://thingsboard.cloud:443/api/plugins/telemetry/DEVICE/" + this.getId() + "/values/timeseries?useStrictDataTypes=false";
-        String token = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqLmFycXVlcm9AYWx1bW5vcy51cG0uZXMiLCJ1c2VySWQiOiJmMWI5YzMyMC00ZTBjLTExZWMtYmEzZS0wNTNiMTAwNjM5NDEiLCJzY29wZXMiOlsiVEVOQU5UX0FETUlOIl0sInNlc3Npb25JZCI6ImFlY2FlOTNiLTUwM2ItNDNhYS04ZGU5LTgwZmJmYmM2MWRiNyIsImlzcyI6InRoaW5nc2JvYXJkLmNsb3VkIiwiaWF0IjoxNjg2NTE5MDY2LCJleHAiOjE2ODY1NDc4NjYsImZpcnN0TmFtZSI6Ikp1YW4iLCJsYXN0TmFtZSI6IkFycXVlcm8gR2FsbGVnbyIsImVuYWJsZWQiOnRydWUsImlzUHVibGljIjpmYWxzZSwiaXNCaWxsaW5nU2VydmljZSI6ZmFsc2UsInByaXZhY3lQb2xpY3lBY2NlcHRlZCI6dHJ1ZSwidGVybXNPZlVzZUFjY2VwdGVkIjp0cnVlLCJ0ZW5hbnRJZCI6ImUyZGQ2NTAwLTY3OGEtMTFlYi05MjJjLWY3NDAyMTlhYmNiOCIsImN1c3RvbWVySWQiOiIxMzgxNDAwMC0xZGQyLTExYjItODA4MC04MDgwODA4MDgwODAifQ.Jv1FqkTw9IlIrYPHlpUnBfkXrw5GyOgaryoC4zv3BKmDOzambgiebYxkshkEW8fIpam6FLzsWTEOnsWbCSRm_g";
+        String token = //Obtener de DeviceManager;
 
         OkHttpClient client = new OkHttpClient();
 
