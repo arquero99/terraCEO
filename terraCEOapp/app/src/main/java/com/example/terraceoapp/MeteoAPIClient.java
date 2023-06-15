@@ -11,6 +11,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import java.util.Arrays;
 import java.util.List;
 
+
+
 public class MeteoAPIClient {
     private static final String BASE_URL = "https://api.open-meteo.com/v1/";
 
