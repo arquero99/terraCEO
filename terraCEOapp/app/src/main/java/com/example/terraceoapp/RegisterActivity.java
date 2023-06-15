@@ -77,6 +77,16 @@ public class RegisterActivity extends AppCompatActivity {
                                 if (task.isSuccessful()) {
                                     Toast.makeText(RegisterActivity.this, "Account created.",
                                             Toast.LENGTH_SHORT).show();
+                                    // Obtener el email y contraseña ingresados
+                                    String email = editTextEmail.getText().toString();
+                                    String password = editTextPassword.getText().toString();
+
+                                    // Iniciar el MainActivity y pasar los datos a través del Intent
+                                    Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+                                    intent.putExtra("email", email);
+                                    intent.putExtra("password", password);
+                                    startActivity(intent);
+                                    finish();
                                 } else {
                                     // If sign in fails, display a message to the user.
                                     Toast.makeText(RegisterActivity.this, "Authentication failed.",

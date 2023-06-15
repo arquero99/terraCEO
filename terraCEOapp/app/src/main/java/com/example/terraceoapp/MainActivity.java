@@ -25,17 +25,21 @@ import org.osmdroid.views.overlay.Marker;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Intent;
+
+
 
 public class MainActivity extends AppCompatActivity {
 
     private MapView map;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
+
     LocationManager mLocationManager;
 
     List<Location> locationsList = new ArrayList<>();
     List<GeoPoint> puntosRuta = new ArrayList<>();
 
-    pwdmanager testConfig=new pwdmanager();
+    //pwdmanager testConfig=new pwdmanager();
 
     @Override
     protected void onDestroy() {
@@ -51,6 +55,12 @@ public class MainActivity extends AppCompatActivity {
 
         // Establecer el diseño de la actividad principal
         setContentView(R.layout.activity_main);
+
+        //Obtener valores de email y contraseña
+        Intent intent = getIntent();
+        String email = intent.getStringExtra("email");
+        String password = intent.getStringExtra("password");
+
 
         // Configurar el agente de usuario de la biblioteca OSMDroid
         Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
@@ -90,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         //Hay que probar esta:
-        DeviceManager dManager=new DeviceManager(testConfig.user,testConfig.pwd);
+        DeviceManager dManager=new DeviceManager(email,password);
         if(!dManager.obtainTokenFromTB_API())
         {
             //Mostrar Mensaje cuenta no corresponde con TB account. Volver al login
