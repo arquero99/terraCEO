@@ -1,27 +1,11 @@
 package com.example.terraceoapp;
 
 public class Location {
-    private String Name;
-    private String Description;
     private double Latitude;
     private double Longitude;
-    public Location(String name, String description, double latitude, double longitude) {
-        Name = name;
-        Description = description;
+    public Location(double latitude, double longitude) {
         Latitude = latitude;
         Longitude = longitude;
-    }
-    public String getName() {
-        return Name;
-    }
-    public void setName(String name) {
-        Name = name;
-    }
-    public String getDescription() {
-        return Description;
-    }
-    public void setDescription(String description) {
-        Description = description;
     }
     public double getLatitude() {
         return Latitude;
