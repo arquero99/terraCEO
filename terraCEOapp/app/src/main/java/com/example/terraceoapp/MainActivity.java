@@ -10,7 +10,10 @@ import android.location.LocationManager;
 import android.os.Bundle;
 
 //
+import com.google.firebase.auth.EmailAuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseUser;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.mapsforge.BuildConfig;
@@ -21,6 +24,7 @@ import org.osmdroid.views.overlay.Marker;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class MainActivity extends AppCompatActivity {
 
