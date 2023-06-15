@@ -1,3 +1,17 @@
+package com.example.terraceoapp;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 //Clase que hereda de device e implemeta el metodo updatedevice que realiza
 //lamada a la api GET/api/plugins/telemetry/{entityType}/{entityId}/values/timeseries{?keys,useStrictDataTypes} Get latest time-series value (getLatestTimeseries)
 //Realizando la conversión propia a objeto Spike
@@ -11,11 +25,11 @@ public class SPIKE_Device extends Device {
         super(value);
     }
 
-    public SPIKE_Device(String valueId, String valueType) {
+    public SPIKE_Device(String valueId, DeviceTypes valueType) {
         super(valueId, valueType);
     }
 
-    public SPIKE_Device(String valueId, String valueType, String valueName) {
+    public SPIKE_Device(String valueId, DeviceTypes valueType, String valueName) {
         super(valueId, valueType, valueName);
     }
     public double getSoilHumidity() {
@@ -30,7 +44,7 @@ public class SPIKE_Device extends Device {
         return airTemperature;
     }
 
-    public void setAirTemperature(double airTemperature) {1
+    public void setAirTemperature(double airTemperature) {
         this.airTemperature = airTemperature;
     }
 
@@ -61,14 +75,15 @@ public class SPIKE_Device extends Device {
     @Override
     public void updateDevice() {
         String url = "https://thingsboard.cloud:443/api/plugins/telemetry/DEVICE/" + this.getId() + "/values/timeseries?useStrictDataTypes=false";
-        String token =  //Obtener de DeviceManager;
 
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
                 .url(url)
-                .addHeader("Authorization", "Bearer " + token)
+                .addHeader("Authorization", "Bearer " + getJwt())
                 .build();
+
+        this.updateDevice();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -82,14 +97,14 @@ public class SPIKE_Device extends Device {
                         if (latitudeArray.length() > 0) {
                             JSONObject latitudeObject = latitudeArray.getJSONObject(0);
                             double latitudeValue = latitudeObject.getDouble("value");
-                            setLatitude(latitudeValue);
+                            getPosition().setLatitude(latitudeValue);
                         }
 
                         JSONArray longitudeArray = json.getJSONArray("longitude");
                         if (longitudeArray.length() > 0) {
                             JSONObject longitudeObject = longitudeArray.getJSONObject(0);
                             double longitudeValue = longitudeObject.getDouble("value");
-                            setLongitude(longitudeValue);
+                            getPosition().setLatitude(longitudeValue);
                         }
 
                         // Actualiza las demás variables según el formato del JSON

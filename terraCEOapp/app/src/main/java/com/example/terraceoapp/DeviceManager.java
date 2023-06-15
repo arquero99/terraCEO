@@ -1,4 +1,5 @@
-import com.google.gson.Gson;
+package com.example.terraceoapp;
+
 import com.google.gson.annotations.SerializedName;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -16,26 +17,24 @@ import retrofit2.http.POST;
 
     /*
      * //Al iniciar:
-     *  1. Comprobar si hay JWT guardado en FireBase    -> public bool getTokenFromFB();
-     *
-     *  2.Si no lo hay, obtener JWT mediante:           -> getTokenFromTB_API();
+     * 1. Obtener JWT mediante:           -> getTokenFromTB_API();
      *      POST /api/auth/login Login method to get user JWT token data
-     *  Si lo hay, comprobar cambios.
      *
-     * 3. Obtener dispositivos relacionados con user    -> getDeviceTypesFromTB_API();
+     * 2. Obtener dispositivos relacionados con user    -> getDeviceTypesFromTB_API();
      * GET /api/device/types Get Device Types (getDeviceTypes)
      * Y RELLENAR LISTA relatedDevices con todos aquellos cuyo entityType=Device ->filterDeviceTypes
      * indicando su type;
      *
-     * 4. Recorrer lista de relatedDevices y segun su type, incluirlo en lista de WSN, Spike o Meteo.
+     * 3. Recorrer lista de relatedDevices y segun su type, incluirlo en lista de WSN, Spike o Meteo.
      *
-     * 5. Para cada una de las listas, llamar a método updateList, que a su vez llame
+     * 4. Para cada una de las listas, llamar a método updateList, que a su vez llame
      * a updateDevice en donde se implemeta el retrofit+GSON.
      * GET /api/plugins/telemetry/{entityType}/{entityId}/values/timeseries{?keys,useStrictDataTypes} Get latest time-series value (getLatestTimeseries)
      * /
 
      */
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 public class DeviceManager
@@ -43,11 +42,22 @@ public class DeviceManager
     private static final String BASE_URL = "https://thingsboard.cloud/api/";
     private static final String AUTH_HEADER = "Authorization";
 
-    List <Device> relatedDevices= new ArrayList<>();
+    public List <Device> relatedDevices= new ArrayList<>();
     private String username_TB;
     private String password_TB;
     private String jwt_TB;
     private String refresh_jwt_TB;
+
+    private int numOfWSN;
+    private int numOfSPIKES;
+    private int numOfMETEOS;
+
+    public DeviceManager(String username, String password)
+    {
+        setUsername_TB(username);
+        setPassword_TB(password);
+        numOfMETEOS=numOfSPIKES=numOfWSN=0;
+    }
 
     public String getUsername_TB() {
         return username_TB;
@@ -81,39 +91,11 @@ public class DeviceManager
         this.refresh_jwt_TB = refresh_jwt_TB;
     }
 
-    /** Comprobar si hay JWT guardado en FireBase
-        REQUISITOS: Disponer del ID del usuario autenticado en Firebase
-                    Disponer de una instancia de FirebaseFirestore
-     **/
-    public boolean getTokenFromFB(FirebaseAuth auth, FirebaseToken token, Firestore firestore) {
-
-        String userId = token.getUid();
-
-        // Consulta el registro "token" asociado al usuario en Firestore
-        DocumentSnapshot document;
-        try {
-            ApiFuture<DocumentSnapshot> future = firestore.collection("users").document(userId).get();
-            document = future.get();
-        } catch (Exception e) {
-            // Maneja la excepción en caso de error al consultar Firestore
-            return false;
-        }
-
-        // Verifica si el registro "token" existe y guarda su valor en jwt_TB
-        if (document.exists()) {
-            String tokenValue = document.getString("token");
-            setJwt_TB(tokenValue);
-            return true;
-        } else {
-            // Maneja el caso de que el registro "token" no exista
-            return false;
-        }
-    }
-    public boolean getTokenFromTB_API(String user, String pwd) {
+    public boolean obtainTokenFromTB_API() {
         OkHttpClient client = new OkHttpClient();
 
         MediaType mediaType = MediaType.parse("text/plain");
-        String requestBody = "{\"username\": \"" + user + "\", \"password\": \"" + pwd + "\"}";
+        String requestBody = "{\"username\": \"" + getUsername_TB() + "\", \"password\": \"" + getPassword_TB() + "\"}";
 
         RequestBody body = RequestBody.create(mediaType, requestBody);
 
@@ -134,10 +116,10 @@ public class DeviceManager
                     if (apiResponse != null) {
                         setJwt_TB(apiResponse.getToken());
                         setRefresh_jwt_TB(apiResponse.getRefreshToken());
-                        getDeviceTypesFromTB_API();
+                        obtainDevicesFromTB_API();
                     }
                 } else {
-                    // Maneja el caso de respuesta no exitosa
+                    // Maneja el caso de respuesta no exitosa (LANZAR MSG USUARIO/PWD PROPORCIONADOS NO CORRESPONDEN A REGISTRO EN TB)
                 }
             }
 
@@ -150,7 +132,7 @@ public class DeviceManager
         return true;
     }
 
-    public List<DeviceTypeResponse> getDeviceTypesFromTB_API() {
+    public void obtainDevicesFromTB_API() {
         OkHttpClient client = new OkHttpClient();
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -172,11 +154,36 @@ public class DeviceManager
                         List<DeviceTypeResponse> filteredDeviceTypes = deviceTypes.stream()
                                 .filter(deviceType -> "DEVICE".equals(deviceType.getEntityType()))
                                 .collect(Collectors.toList());
-                        return filteredDeviceTypes;
+                        for (DeviceTypeResponse filteredDevice : filteredDeviceTypes) {
+                            if (filteredDevice.type.equals("WSN"))
+                            {
+                                String wsnName="WSN Station "+numOfWSN;
+                                WSN_Device wsnDev = new WSN_Device(filteredDevice.id,DeviceTypes.WSN,wsnName);
+                                wsnDev.setJwt(getJwt_TB());
+                                relatedDevices.add(wsnDev);
+                                numOfWSN++;
+                            }
+                            else if (filteredDevice.type.equals("METEO")) {
+                                String meteoName="METEO Station " + numOfMETEOS;
+                                METEO_Device meteoDev = new METEO_Device(filteredDevice.id, DeviceTypes.METEO, meteoName);
+                                meteoDev.setJwt(getJwt_TB());
+                                relatedDevices.add(meteoDev);
+                                numOfMETEOS++;
+                            }
+                            else if(filteredDevice.type.equals("SPIKE"))
+                            {
+                                String spikeName="SPIKE Sensor "+ numOfSPIKES;
+                                SPIKE_Device spikeDev=new SPIKE_Device(filteredDevice.id, DeviceTypes.SPIKE, spikeName);
+                                spikeDev.setJwt(getJwt_TB());
+                                relatedDevices.add(spikeDev);
+                                numOfSPIKES++;
+                            }
+                        }
+
+
                     }
                 } else {
                     // Maneja el caso de respuesta no exitosa
-                    return Collections.emptyList();
                 }
             }
 
@@ -185,26 +192,29 @@ public class DeviceManager
                 // Maneja la falla en la solicitud
             }
         });
+    };
+    public int getNumOfWSN() {
+        return numOfWSN;
     }
 
-    /**
-     * Crea instancias de la clase Device a partir de los elementos de la lista filteredDeviceTypes,
-     * transfiriendo únicamente los campos "id" y "type". Las instancias creadas se devuelven en una lista.
-     *
-     * @param filteredDeviceTypes Lista de elementos DeviceTypeResponse filtrados.
-     * @return Lista de instancias de la clase Device con los campos "id" y "type" transferidos.
-     */
-    public List<Device> createDeviceInstances(List<DeviceTypeResponse> filteredDeviceTypes) {
-        List<Device> deviceInstances = new ArrayList<>();
+    public void setNumOfWSN(int numOfWSN) {
+        this.numOfWSN = numOfWSN;
+    }
 
-        for (DeviceTypeResponse deviceType : filteredDeviceTypes) {
-            Device device = new Device();
-            device.setId(deviceType.getId());
-            device.setType(deviceType.getType());
-            deviceInstances.add(device);
-        }
+    public int getNumOfSPIKES() {
+        return numOfSPIKES;
+    }
 
-        return deviceInstances;
+    public void setNumOfSPIKES(int numOfSPIKES) {
+        this.numOfSPIKES = numOfSPIKES;
+    }
+
+    public int getNumOfMETEOS() {
+        return numOfMETEOS;
+    }
+
+    public void setNumOfMETEOS(int numOfMETEOS) {
+        this.numOfMETEOS = numOfMETEOS;
     }
 
     //////////CLASES E INTERFACES AUXILIARES
@@ -284,7 +294,3 @@ public class DeviceManager
     }
 }
 
-    
-    
-
-}

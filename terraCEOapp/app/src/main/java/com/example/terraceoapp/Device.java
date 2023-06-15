@@ -1,8 +1,10 @@
-//Clase abstracta con método updateDevice por implementar. 
+package com.example.terraceoapp;//Clase abstracta con método updateDevice por implementar.
 //Este metodo realiza la llamada a la api
 //GET /api/plugins/telemetry/{entityType}/{entityId}/values/timeseries{?keys,useStrictDataTypes} Get latest time-series value (getLatestTimeseries)
 
+import com.example.terraceoapp.Location;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -15,26 +17,29 @@ public abstract class Device
 {
     private String id;
     private String name;
-    private String type;
+    private DeviceTypes type;
+
+    private String jwt;
 
     private Location position;
 
     private String description;
 
+    Device(){this.id="NOID";}
     Device(String value){
         this.id=value;
     }
 
-    Device(String valueId, String valueType)
+    Device(String valueId, DeviceTypes valueType)
     {
-        this.Device(valueId);
+        this(valueId);
         this.type=valueType;
     }
 
-    Device(String valueId, String valueType, String valueName)
+    Device(String valueId, DeviceTypes valueType, String valueJWT)
     {
-        this.Device(valueId, valueType);
-        this.name=valueName;
+        this(valueId, valueType);
+        setJwt(valueJWT);
     }
 
     public String getId()
@@ -47,13 +52,18 @@ public abstract class Device
         return this.name;
     }
 
+    public String getJwt(){return this.jwt;}
+
     public void setName(String value)
     {
         this.name=value;
     }
 
     public void setId(String value){this.id=value;}
-    public void getInitInfo(String token) {
+
+    public void setJwt(String value){this.jwt=value;}
+
+    public void updateDevice(String token) {
         String url = "https://thingsboard.cloud/api/plugins/telemetry/DEVICE/" + this.id + "/values/timeseries?useStrictDataTypes=false";
         OkHttpClient client = new OkHttpClient.Builder().build();
         Request request = new Request.Builder()
@@ -66,7 +76,8 @@ public abstract class Device
             String responseBody = response.body().string();
 
             // Parsear la respuesta JSON
-            JsonElement jsonElement = JsonParser.parseString(responseBody);
+            JsonParser jsonParser = new JsonParser();
+            JsonElement jsonElement = jsonParser.parse(responseBody);
             JsonObject jsonObject = jsonElement.getAsJsonObject();
 
             // Obtener los valores correspondientes
@@ -80,11 +91,14 @@ public abstract class Device
             String latValue = gson.fromJson(posXElement.getAsJsonObject().get("value"), String.class);
             String longValue = gson.fromJson(posYElement.getAsJsonObject().get("value"), String.class);
 
-            if(jsonObject.get("description").getAsJsonArray().get(0)!=NULL)
-            {
-                JsonElement descriptionElement;
-                String descriptionValue=gson.fromJson(descriptionElement.getAsJsonOnject.get("value"), String class));
-                this.description=descriptionValue;
+            if (jsonObject.get("description").getAsJsonArray().size() > 0) {
+                JsonArray descriptionArray = jsonObject.get("description").getAsJsonArray();
+                JsonObject descriptionObject = descriptionArray.get(0).getAsJsonObject();
+                JsonElement descriptionValueElement = descriptionObject.get("value");
+                if (!descriptionValueElement.isJsonNull()) {
+                    String descriptionValue = descriptionValueElement.getAsString();
+                    this.description = descriptionValue;
+                }
             }
 
             this.name = nameValue;
@@ -93,6 +107,22 @@ public abstract class Device
             e.printStackTrace();
         }
     }
-}
+
+    public Location getPosition() {
+        return position;
+    }
+
+    public void setPosition(Location position) {
+        this.position = position;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public abstract void updateDevice();
 }

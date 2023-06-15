@@ -16,7 +16,6 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
-import org.osmdroid.views.overlay.Polyline;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +26,10 @@ public class MainActivity extends AppCompatActivity {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
     LocationManager mLocationManager;
 
-    List<Location> listaLocalizaciones = new ArrayList<>();
+    List<Location> locationsList = new ArrayList<>();
     List<GeoPoint> puntosRuta = new ArrayList<>();
+
+    pwdmanager testConfig=new pwdmanager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,15 +71,42 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Crear una lista de ubicaciones (incluyendo el punto de inicio y la ubicación actual)
-        listaLocalizaciones.add(new Location(40.38999, -3.65518));
-        listaLocalizaciones.add(locActual);1
+        locationsList.add(new Location(40.38999, -3.65518));
+        locationsList.add(locActual);
 
+
+        //Hay que probar esta:
+        DeviceManager dManager=new DeviceManager(testConfig.user,testConfig.pwd);
+        if(!dManager.obtainTokenFromTB_API())
+        {
+            //Mostrar Mensaje cuenta no corresponde con TB account. Volver al login
+        }
+        else
+        {
+            dManager.obtainDevicesFromTB_API();
+            if(dManager.relatedDevices.isEmpty())
+            {
+                //Mostrar Mensaje no se han encontrado dispositivos y poner boton de
+                // refresco asociado con dManager.obtainDevicesFromTB_API();
+            }
+            else
+            {
+                for (Device dev : dManager.relatedDevices)
+                {
+                    Location devLocation=dev.getPosition();
+                    locationsList.add(devLocation);
+                    Marker m = new Marker(map);
+                    m.setPosition(new GeoPoint(devLocation.getLatitude(), devLocation.getLongitude()));
+                    m.setTitle(dev.getName());
+                }
+            }
+        }
         // Agregar marcadores y puntos de ruta para cada ubicación en la lista
-        for (Location loc : listaLocalizaciones) {
+        for (Location loc : locationsList) {
             Marker m = new Marker(map);
             m.setPosition(new GeoPoint(loc.getLatitude(), loc.getLongitude()));
-            m.setTitle(loc.getName());
-            m.setSnippet(loc.getDescription());
+            //m.setTitle(loc.getName());
+            //m.setSnippet(loc.getDescription());
             map.getOverlays().add(m);
             puntosRuta.add(new GeoPoint(loc.getLatitude(), loc.getLongitude()));
         }

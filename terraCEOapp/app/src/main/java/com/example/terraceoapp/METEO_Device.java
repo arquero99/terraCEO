@@ -1,6 +1,18 @@
-//Clase que hereda de device e implemeta el metodo updatedevice que realiza
+package com.example.terraceoapp;//Clase que hereda de device e implemeta el metodo updatedevice que realiza
 //lamada a la api GET/api/plugins/telemetry/{entityType}/{entityId}/values/timeseries{?keys,useStrictDataTypes} Get latest time-series value (getLatestTimeseries)
 //Realizando la conversión propia a objeto METEO
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class METEO_Device extends Device {
 
@@ -13,16 +25,16 @@ public class METEO_Device extends Device {
         super(value);
     }
 
-    public METEO_Device(String valueId, String valueType) {
+    public METEO_Device(String valueId, DeviceTypes valueType) {
         super(valueId, valueType);
     }
 
     public double getBaromPressure() {
-        return baromPressure;
+        return baromPreassure;
     }
 
     public void setBaromPressure(double baromPressure) {
-        this.baromPressure = baromPressure;
+        this.baromPreassure = baromPressure;
     }
 
     public double getLightLux() {
@@ -49,21 +61,22 @@ public class METEO_Device extends Device {
         this.wind_KPH = wind_KPH;
     }
 
-    public METEO_Device(String valueId, String valueType, String valueName) {
-        super(valueId, valueType, valueName);
+    public METEO_Device(String valueId, DeviceTypes valueType, String valueName) {
+        super(valueId, valueType);
+        setName(valueName);
+        setDescription("Meteorological Satation. Gives infomation about current weather an clima status.");
     }
 
 
     @Override
     public void updateDevice() {
         String url = "https://thingsboard.cloud:443/api/plugins/telemetry/DEVICE/" + this.getId() + "/values/timeseries?useStrictDataTypes=false";
-        String token = ;//Obetener de device manager creado con info de login.
 
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
                 .url(url)
-                .addHeader("Authorization", "Bearer " + token)
+                .addHeader("Authorization", "Bearer " + getJwt())
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -78,14 +91,14 @@ public class METEO_Device extends Device {
                         if (latitudeArray.length() > 0) {
                             JSONObject latitudeObject = latitudeArray.getJSONObject(0);
                             double latitudeValue = latitudeObject.getDouble("value");
-                            setLatitude(latitudeValue);
+                            getPosition().setLatitude(latitudeValue);
                         }
 
                         JSONArray longitudeArray = json.getJSONArray("longitude");
                         if (longitudeArray.length() > 0) {
                             JSONObject longitudeObject = longitudeArray.getJSONObject(0);
                             double longitudeValue = longitudeObject.getDouble("value");
-                            setLongitude(longitudeValue);
+                            getPosition().setLatitude(longitudeValue);
                         }
 
                         // Actualiza las demás variables según el formato del JSON
@@ -122,6 +135,7 @@ public class METEO_Device extends Device {
 
                     } catch (JSONException e) {
                         e.printStackTrace();
+                        throw new RuntimeException(e);
                     }
                 }
             }
