@@ -23,6 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Intent;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 
 
@@ -101,6 +104,14 @@ public class MainActivity extends AppCompatActivity {
         if(!dManager.obtainTokenFromTB_API())
         {
             //Mostrar Mensaje cuenta no corresponde con TB account. Volver al login
+            // Mostrar el mensaje en pantalla
+            Toast.makeText(MainActivity.this, "La cuenta no corresponde con TB account", Toast.LENGTH_SHORT).show();
+            // Logout de Firebase
+            FirebaseAuth.getInstance().signOut();
+            // Redirigir al inicio de sesión
+            Intent intent2 = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(intent2);
+            finish(); // Opcionalmente, finalizar la actividad actual para que no se pueda volver atrás
         }
         else
         {
@@ -109,6 +120,20 @@ public class MainActivity extends AppCompatActivity {
             {
                 //Mostrar Mensaje no se han encontrado dispositivos y poner boton de
                 // refresco asociado con dManager.obtainDevicesFromTB_API();
+
+                // Mostrar mensaje de "No se han encontrado dispositivos"
+                Toast.makeText(MainActivity.this, "No se han encontrado dispositivos", Toast.LENGTH_SHORT).show();
+                // Botón
+                Button buttonRefresh = findViewById(R.id.button_refresh);
+                buttonRefresh.setVisibility(View.VISIBLE);
+
+                buttonRefresh.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dManager.obtainDevicesFromTB_API();
+                    }
+                });
+
             }
             else
             {
