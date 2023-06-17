@@ -98,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
         locationsList.add(new Location(40.38999, -3.65518));
         locationsList.add(locActual);
 
-
         //Hay que probar esta:
         DeviceManager dManager=new DeviceManager(email,password);
         if(!dManager.obtainTokenFromTB_API())
@@ -137,13 +136,18 @@ public class MainActivity extends AppCompatActivity {
             }
             else
             {
+
+                MeteoAPIClient meteoClient=new MeteoAPIClient();    //Creamos API Meteo
                 for (Device dev : dManager.relatedDevices)
                 {
                     Location devLocation=dev.getPosition();
                     locationsList.add(devLocation);
+                    meteoClient.obtainForecast(devLocation.getLatitude(), devLocation.getLongitude());
                     Marker m = new Marker(map);
                     m.setPosition(new GeoPoint(devLocation.getLatitude(), devLocation.getLongitude()));
                     m.setTitle(dev.getName());
+                    //Añadir metodo abstracto de devide getDataString, que devuelva un string con los datos captado para poner como descripcion.
+
                 }
             }
         }

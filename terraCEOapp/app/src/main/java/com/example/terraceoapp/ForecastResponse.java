@@ -44,10 +44,13 @@ public class ForecastResponse {
         return daily;
     }
 
+
+    //////////////////CLASE DAILY DATA////////////////////////////
     public static class DailyData {
         private List<String> time;
         private List<Double> temperature_2m_max;
         private List<Double> precipitation_sum;
+        private List<Double>precipitation_probability_max;
         private List<Double> et0_fao_evapotranspiration;
 
         public List<String> getTime() {
@@ -65,7 +68,9 @@ public class ForecastResponse {
         public double[] getEvapotranspirationArray() {
             return listToArray(et0_fao_evapotranspiration);
         }
-
+        public double[] getPrecipitation_probability_max() {
+            return listToArray(precipitation_probability_max);
+        }
         private double[] listToArray(List<Double> list) {
             double[] array = new double[list.size()];
             for (int i = 0; i < list.size(); i++) {

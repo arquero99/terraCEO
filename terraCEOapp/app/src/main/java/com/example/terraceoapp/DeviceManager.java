@@ -105,17 +105,17 @@ public class DeviceManager
                 .client(client)
                 .build();
 
-        ApiService apiService = retrofit.create(ApiService.class);
-        Call<ApiResponse> call = apiService.getToken(body);
+        DeviceManagerApiService deviceManagerApiService = retrofit.create(DeviceManagerApiService.class);
+        Call<DeviceManagerApiResponse> call = deviceManagerApiService.getToken(body);
 
-        call.enqueue(new Callback<ApiResponse>() {
+        call.enqueue(new Callback<DeviceManagerApiResponse>() {
             @Override
-            public void onResponse(Call<ApiResponse> call, Response<ApiResponse> response) {
+            public void onResponse(Call<DeviceManagerApiResponse> call, Response<DeviceManagerApiResponse> response) {
                 if (response.isSuccessful()) {
-                    ApiResponse apiResponse = response.body();
-                    if (apiResponse != null) {
-                        setJwt_TB(apiResponse.getToken());
-                        setRefresh_jwt_TB(apiResponse.getRefreshToken());
+                    DeviceManagerApiResponse deviceManagerApiResponse = response.body();
+                    if (deviceManagerApiResponse != null) {
+                        setJwt_TB(deviceManagerApiResponse.getToken());
+                        setRefresh_jwt_TB(deviceManagerApiResponse.getRefreshToken());
                         obtainDevicesFromTB_API();
                     }
                 } else {
@@ -124,7 +124,7 @@ public class DeviceManager
             }
 
             @Override
-            public void onFailure(Call<ApiResponse> call, Throwable t) {
+            public void onFailure(Call<DeviceManagerApiResponse> call, Throwable t) {
                 // Maneja la falla en la solicitud
             }
         });
@@ -141,9 +141,9 @@ public class DeviceManager
                 .client(client)
                 .build();
 
-        ApiService apiService = retrofit.create(ApiService.class);
+        DeviceManagerApiService deviceManagerApiService = retrofit.create(DeviceManagerApiService.class);
         String authHeaderValue = "Bearer " + getJwt_TB();
-        Call<List<DeviceTypeResponse>> call = apiService.getDeviceTypes(authHeaderValue);
+        Call<List<DeviceTypeResponse>> call = deviceManagerApiService.getDeviceTypes(authHeaderValue);
 
         call.enqueue(new Callback<List<DeviceTypeResponse>>() {
             @Override
@@ -218,16 +218,16 @@ public class DeviceManager
     }
 
     //////////CLASES E INTERFACES AUXILIARES
-    public interface ApiService {
+    public interface DeviceManagerApiService {
         @Headers("Content-Type: text/plain")
         @POST("auth/login")
-        Call<ApiResponse> getToken(@Body RequestBody requestBody);
+        Call<DeviceManagerApiResponse> getToken(@Body RequestBody requestBody);
 
         @GET("device/types")
         Call<List<DeviceTypeResponse>> getDeviceTypes(@Header(AUTH_HEADER) String authorizationHeader);
     }
 
-    public class ApiResponse {
+    public class DeviceManagerApiResponse {
         @SerializedName("token")
         private String token;
 
