@@ -30,15 +30,11 @@ import android.widget.Toast;
 
 
 public class MainActivity extends AppCompatActivity {
-
     private MapView map;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
-
     LocationManager mLocationManager;
-
     List<Location> locationsList = new ArrayList<>();
     List<GeoPoint> puntosRuta = new ArrayList<>();
-
     //pwdmanager testConfig=new pwdmanager();
 
     @Override
@@ -103,8 +99,7 @@ public class MainActivity extends AppCompatActivity {
         if(!dManager.obtainTokenFromTB_API())
         {
             //Mostrar Mensaje cuenta no corresponde con TB account. Volver al login
-            // Mostrar el mensaje en pantalla
-            Toast.makeText(MainActivity.this, "La cuenta no corresponde con TB account", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "La cuenta no corresponde con TB account", Toast.LENGTH_SHORT).show();// Mostrar el mensaje en pantalla
             // Logout de Firebase
             FirebaseAuth.getInstance().signOut();
             // Redirigir al inicio de sesión
@@ -117,13 +112,8 @@ public class MainActivity extends AppCompatActivity {
             dManager.obtainDevicesFromTB_API();
             if(dManager.relatedDevices.isEmpty())
             {
-                //Mostrar Mensaje no se han encontrado dispositivos y poner boton de
-                // refresco asociado con dManager.obtainDevicesFromTB_API();
-
-                // Mostrar mensaje de "No se han encontrado dispositivos"
-                Toast.makeText(MainActivity.this, "No se han encontrado dispositivos", Toast.LENGTH_SHORT).show();
-                // Botón
-                Button buttonRefresh = findViewById(R.id.button_refresh);
+                Toast.makeText(MainActivity.this, "No se han encontrado dispositivos", Toast.LENGTH_SHORT).show(); // Mostrar mensaje de "No se han encontrado dispositivos"
+                Button buttonRefresh = findViewById(R.id.button_refresh); //Botón de refresco
                 buttonRefresh.setVisibility(View.VISIBLE);
                 buttonRefresh.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -136,6 +126,16 @@ public class MainActivity extends AppCompatActivity {
             }
             else
             {
+                MeteoAPIClient meteoClient=new MeteoAPIClient();    //Creamos API Meteo
+                for (Device dev : dManager.relatedDevices)
+                {
+                    Location devLocation=dev.getPosition();
+                    locationsList.add(devLocation);
+                    meteoClient.obtainForecast(devLocation.getLatitude(), devLocation.getLongitude());
+                    Marker m = new Marker(map);
+                    m.setPosition(new GeoPoint(devLocation.getLatitude(), devLocation.getLongitude()));
+                    m.setTitle(dev.getName());
+                }
                 Button buttonTelemetries = findViewById(R.id.getDeviceTelems);
                 buttonTelemetries.setVisibility(View.VISIBLE);
                 buttonTelemetries.setOnClickListener(
@@ -149,25 +149,14 @@ public class MainActivity extends AppCompatActivity {
                         finish();
                     }
                 });
-                MeteoAPIClient meteoClient=new MeteoAPIClient();    //Creamos API Meteo
-                for (Device dev : dManager.relatedDevices)
-                {
-                    Location devLocation=dev.getPosition();
-                    locationsList.add(devLocation);
-                    meteoClient.obtainForecast(devLocation.getLatitude(), devLocation.getLongitude());
-                    Marker m = new Marker(map);
-                    m.setPosition(new GeoPoint(devLocation.getLatitude(), devLocation.getLongitude()));
-                    m.setTitle(dev.getName());
-                    //Añadir metodo abstracto de devide getDataString, que devuelva un string con los datos captado para poner como descripcion.
 
-                }
             }
         }
         // Agregar marcadores y puntos de ruta para cada ubicación en la lista
         for (Location loc : locationsList) {
             Marker m = new Marker(map);
             m.setPosition(new GeoPoint(loc.getLatitude(), loc.getLongitude()));
-            //m.setTitle(loc.getName());
+            //m.setTitle(loc.getName());++Añadir a la clase  
             //m.setSnippet(loc.getDescription());
             map.getOverlays().add(m);
             puntosRuta.add(new GeoPoint(loc.getLatitude(), loc.getLongitude()));

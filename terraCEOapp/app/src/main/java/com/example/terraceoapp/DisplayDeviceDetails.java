@@ -7,10 +7,6 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.auth.FirebaseAuth;
-
-import org.w3c.dom.Text;
-
 public class DisplayDeviceDetails extends AppCompatActivity {
     public Device targetDevice;
     private Handler handler;
