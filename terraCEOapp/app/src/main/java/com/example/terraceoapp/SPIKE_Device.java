@@ -18,7 +18,6 @@ import okhttp3.Response;
 public class SPIKE_Device extends Device {
     private double soilHumidity;
     private double airTemperature;
-    private double soilTemperature;
     private double luminosity;
     private double airHumidity;
     public SPIKE_Device(String value) {
@@ -46,14 +45,6 @@ public class SPIKE_Device extends Device {
 
     public void setAirTemperature(double airTemperature) {
         this.airTemperature = airTemperature;
-    }
-
-    public double getSoilTemperature() {
-        return soilTemperature;
-    }
-
-    public void setSoilTemperature(double soilTemperature) {
-        this.soilTemperature = soilTemperature;
     }
 
     public double getLuminosity() {
@@ -121,13 +112,6 @@ public class SPIKE_Device extends Device {
                             JSONObject airTemperatureObject = airTemperatureArray.getJSONObject(0);
                             double airTemperatureValue = airTemperatureObject.getDouble("value");
                             setAirTemperature(airTemperatureValue);
-                        }
-
-                        JSONArray soilTemperatureArray = json.getJSONArray("soilTemperature");
-                        if (soilTemperatureArray.length() > 0) {
-                            JSONObject soilTemperatureObject = soilTemperatureArray.getJSONObject(0);
-                            double soilTemperatureValue = soilTemperatureObject.getDouble("value");
-                            setSoilTemperature(soilTemperatureValue);
                         }
 
                         JSONArray luminosityArray = json.getJSONArray("luminosity");

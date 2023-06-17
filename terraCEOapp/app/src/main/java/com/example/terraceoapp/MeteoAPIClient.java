@@ -15,7 +15,9 @@ public class MeteoAPIClient {
     private static final String BASE_URL = "https://api.open-meteo.com/v1/";
     private static MeteoApiService service;
     private double[] temperatureMaxArray;
-    private double[] precipitationArray;
+    private double[] precipitationProbArray;
+
+    private double[] precipitationSumArray;
     private double[] evapotranspirationArray;
 
     public MeteoAPIClient() {
@@ -47,13 +49,18 @@ public class MeteoAPIClient {
         return this.temperatureMaxArray;
     }
 
-    public double[] getPrecipitationArray() {
-        return this.precipitationArray;
+    public double[] getPrecipitationProbArray() {
+        return this.precipitationProbArray;
     }
 
     public double[] getEvapotranspirationArray() {
         return this.evapotranspirationArray;
     }
+
+    public double[] getPrecipitationSumArray() {
+        return this.precipitationSumArray;
+    }
+
 }
 
 //////// INTERFAZ API /////////

@@ -1,6 +1,534 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <!--DeviceName-->
+    <TextView
+        android:id="@+id/deviceName"
+        android:layout_width="match_parent"
+        android:layout_height="60dip"
+        android:layout_marginHorizontal="30dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/device_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!--Linea-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginHorizontal="60dp"
+        app:layout_constraintBottom_toTopOf="@+id/tableLayout"
+        app:layout_constraintTop_toBottomOf="@+id/deviceName">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#000000" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!--SensorInfo-->
+    <TableLayout
+        android:id="@+id/tableLayout"
+        android:layout_width="350dp"
+        android:layout_height="350dp"
+        android:layout_marginTop="40dp"
+        android:divider="#063970"
+        android:dividerHeight="2dp"
+        android:showDividers="middle|beginning|end"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/deviceName">
+
+        <TableRow
+            android:layout_weight="1"
+            android:divider="#063970"
+            android:showDividers="middle|beginning|end">
+
+            <TableLayout
+                android:layout_height="match_parent"
+                android:layout_margin="2dp"
+                android:layout_weight="1">
+
+                <TextView
+                    android:id="@+id/sensorName1"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:background="#7c46d6"
+                    android:gravity="center"
+                    android:text="Celda 1.1"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/sensorData1"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="#756c37c6"
+                    android:gravity="center"
+                    android:text="Celda 1.2" />
+            </TableLayout>
+
+            <TableLayout
+                android:layout_height="match_parent"
+                android:layout_margin="2dp"
+                android:layout_weight="1">
+
+                <TextView
+                    android:id="@+id/sensorName2"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:background="#5c2799"
+                    android:gravity="center"
+                    android:text="Celda 2.1"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/sensorData2"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="#8e8ecd"
+                    android:gravity="center"
+                    android:text="Celda 2.2" />
+            </TableLayout>
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:divider="#063970"
+            android:showDividers="middle">
+
+            <TableLayout
+                android:layout_height="match_parent"
+                android:layout_margin="2dp"
+                android:layout_weight="1">
+
+                <TextView
+                    android:id="@+id/sensorName3"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:background="#E0E0E0"
+                    android:gravity="center"
+                    android:text="Celda 3.1"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/sensorData3"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="#F5F5F5"
+                    android:gravity="center"
+                    android:text="Celda 3.2" />
+            </TableLayout>
+
+            <TableLayout
+                android:layout_height="match_parent"
+                android:layout_margin="2dp"
+                android:layout_weight="1">
+
+                <TextView
+                    android:id="@+id/sensorName4"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:background="#E0E0E0"
+                    android:gravity="center"
+                    android:text="Celda 4.1"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/sensorData4"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="#F5F5F5"
+                    android:gravity="center"
+                    android:text="Celda 4.2" />
+            </TableLayout>
+        </TableRow>
+    </TableLayout>
+
+    <!--Forecast-->
+    <TableLayout
+        android:id="@+id/tableLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_marginHorizontal="20dp"
+        android:divider="#063970"
+        android:dividerHeight="2dp"
+        android:showDividers="middle|beginning|end"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tableLayout">
+
+        <!--Dias de la semana-->
+        <TableRow
+            android:layout_weight="1"
+            android:divider="#063970"
+            android:showDividers="middle|beginning|end">
+            <TextView
+                android:id="@+id/dia1"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#7c46d6"
+                android:gravity="center"
+                android:text="Lunes"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/dia2"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#756c37c6"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:text="Martes" />
+            <TextView
+                android:id="@+id/dia3"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#7c46d6"
+                android:gravity="center"
+                android:text="Miercoles"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/dia4"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#756c37c6"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:text="Jueves" />
+            <TextView
+                android:id="@+id/dia5"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#7c46d6"
+                android:gravity="center"
+                android:text="Viernes"
+                android:textStyle="bold" />
+            <TextView
+                android:id="@+id/dia6"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#756c37c6"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:text="Sabado" />
+            <TextView
+                android:id="@+id/dia7"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#7c46d6"
+                android:gravity="center"
+                android:text="Domingo"
+                android:textStyle="bold" />
+
+        </TableRow>
+
+        <!--Precipitacion-->
+        <TableRow
+            android:layout_weight="1"
+            android:divider="#063970"
+            android:showDividers="middle|beginning|end">
+
+            <TableLayout
+                android:layout_height="match_parent"
+                android:layout_margin="2dp"
+                android:layout_weight="1">
+
+                <TextView
+                    android:id="@+id/prob1"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:background="#5c2799"
+                    android:gravity="center"
+                    android:text="PrecProb1"
+                    android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/sum1"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="#8e8ecd"
+                    android:gravity="center"
+                    android:text="PrecSum1" />
+            </TableLayout>
+            <TableLayout
+                android:layout_height="match_parent"
+                android:layout_margin="2dp"
+                android:layout_weight="1">
+
+                <TextView
+                    android:id="@+id/prob2"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:background="#5c2799"
+                    android:gravity="center"
+                    android:text="PrecProb2"
+                    android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/sum2"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="#8e8ecd"
+                    android:gravity="center"
+                    android:text="PrecSum2"/>
+            </TableLayout>
+            <TableLayout
+                android:layout_height="match_parent"
+                android:layout_margin="2dp"
+                android:layout_weight="1">
+
+                <TextView
+                    android:id="@+id/prob3"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:background="#5c2799"
+                    android:gravity="center"
+                    android:text="PrecProb3"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/sum3"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="#8e8ecd"
+                    android:gravity="center"
+                    android:text="PrecSum3" />
+            </TableLayout>
+            <TableLayout
+                android:layout_height="match_parent"
+                android:layout_margin="2dp"
+                android:layout_weight="1">
+
+                <TextView
+                    android:id="@+id/prob4"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:background="#5c2799"
+                    android:gravity="center"
+                    android:text="PrecProb4"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/sum4"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="#8e8ecd"
+                    android:gravity="center"
+                    android:text="PrecSum4" />
+            </TableLayout>
+            <TableLayout
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/prob5"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:background="#5c2799"
+                android:gravity="center"
+                android:text="PrecProb5"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/sum5"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#8e8ecd"
+                android:gravity="center"
+                android:text="PrecSum5" />
+        </TableLayout>
+            <TableLayout
+                android:layout_height="match_parent"
+                android:layout_margin="2dp"
+                android:layout_weight="1">
+
+                <TextView
+                    android:id="@+id/prob6"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:background="#5c2799"
+                    android:gravity="center"
+                    android:text="PrecProb6"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/sum6"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="#8e8ecd"
+                    android:gravity="center"
+                    android:text="PrecSum6" />
+            </TableLayout>
+            <TableLayout
+                android:layout_height="match_parent"
+                android:layout_margin="2dp"
+                android:layout_weight="1">
+
+                <TextView
+                    android:id="@+id/prob7"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:background="#5c2799"
+                    android:gravity="center"
+                    android:text="PrecProb7"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/sum7"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="#8e8ecd"
+                    android:gravity="center"
+                    android:text="PrecSum7" />
+            </TableLayout>
+        </TableRow>
+
+        <!--Temperatura-->
+        <TableRow
+            android:layout_weight="1"
+            android:divider="#063970"
+            android:showDividers="middle|beginning|end">
+            <TextView
+                android:id="@+id/temp1"
+                android:layout_margin="2dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#80b10505"
+                android:gravity="center"
+                android:text="Temperature1" />
+            <TextView
+                android:id="@+id/temp2"
+                android:layout_margin="2dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#80b10505"
+                android:gravity="center"
+                android:text="Temperature2" />
+            <TextView
+                android:id="@+id/temp3"
+                android:layout_margin="2dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#80b10505"
+                android:gravity="center"
+                android:text="Temperature3" />
+            <TextView
+                android:id="@+id/temp4"
+                android:layout_margin="2dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#80b10505"
+                android:gravity="center"
+                android:text="Temperature4" />
+            <TextView
+                android:id="@+id/temp5"
+                android:layout_margin="2dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#80b10505"
+                android:gravity="center"
+                android:text="Temperature5" />
+            <TextView
+                android:id="@+id/temp6"
+                android:layout_margin="2dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#80b10505"
+                android:gravity="center"
+                android:text="Temperature6" />
+            <TextView
+                android:id="@+id/temp7"
+                android:layout_margin="2dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#80b10505"
+                android:gravity="center"
+                android:text="Temperature7" />
+        </TableRow>
+
+        <!--Evapotranspiracion-->
+        <TableRow
+            android:layout_weight="1"
+            android:divider="#063970"
+            android:showDividers="middle|beginning|end">
+            <TextView
+                android:id="@+id/et1"
+                android:layout_margin="2dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#800fc603"
+                android:gravity="center"
+                android:text="Evapotransp1" />
+            <TextView
+                android:id="@+id/et2"
+                android:layout_margin="2dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#800fc603"
+                android:gravity="center"
+                android:text="Evapotransp2" />
+            <TextView
+                android:id="@+id/et3"
+                android:layout_margin="2dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#800fc603"
+                android:gravity="center"
+                android:text="Evapotransp3" />
+            <TextView
+                android:id="@+id/et4"
+                android:layout_margin="2dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#800fc603"
+                android:gravity="center"
+                android:text="Evapotransp4" />
+            <TextView
+                android:id="@+id/et5"
+                android:layout_margin="2dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#800fc603"
+                android:gravity="center"
+                android:text="Evapotransp5" />
+            <TextView
+                android:id="@+id/et6"
+                android:layout_margin="2dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#800fc603"
+                android:gravity="center"
+                android:text="Evapotransp6" />
+            <TextView
+                android:id="@+id/et7"
+                android:layout_margin="2dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#800fc603"
+                android:gravity="center"
+                android:text="Evapotransp7" />
+        </TableRow>
+
+    </TableLayout>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
