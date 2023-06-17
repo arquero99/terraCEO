@@ -16,7 +16,7 @@ import okhttp3.Response;
 
 public class METEO_Device extends Device {
 
-    private double baromPreassure;
+    private double baromPressure;
     private double lightLux;
     private boolean raining;
     private int wind_KPH;
@@ -29,12 +29,48 @@ public class METEO_Device extends Device {
         super(valueId, valueType);
     }
 
+    public String getSensorName1()
+    {
+        return "Barometric Pressure";
+    }
+    public String getSensorName2()
+    {
+        return "Ambient Light";
+    }
+    public String getSensorName3()
+    {
+        return "Currently Raining";
+    }
+    public String getSensorName4()
+    {
+        return "Wind velocity";
+    }
+    public String getSensorValue1()
+    {
+        return (decimalFormat.format(getBaromPressure())+" bar");
+    }
+    public String getSensorValue2()
+    {
+        return (decimalFormat.format(getLightLux()));
+    }
+    public String getSensorValue3()
+    {
+        if (isRaining())
+        {
+            return "Yes";
+        }
+        else return "No";
+    }
+    public String getSensorValue4()
+    {
+        return (getWind_KPH()+ " kph");
+    }
     public double getBaromPressure() {
-        return baromPreassure;
+        return baromPressure;
     }
 
     public void setBaromPressure(double baromPressure) {
-        this.baromPreassure = baromPressure;
+        this.baromPressure = baromPressure;
     }
 
     public double getLightLux() {

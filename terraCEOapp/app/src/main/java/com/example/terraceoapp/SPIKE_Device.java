@@ -31,6 +31,39 @@ public class SPIKE_Device extends Device {
     public SPIKE_Device(String valueId, DeviceTypes valueType, String valueName) {
         super(valueId, valueType, valueName);
     }
+    public String getSensorName1()
+    {
+        return "Soil Humidity";
+    }
+    public String getSensorName2()
+    {
+        return "Air Temperature";
+    }
+    public String getSensorName3()
+    {
+        return "Luminosity";
+    }
+    public String getSensorName4()
+    {
+        return "Air Humidity";
+    }
+    public String getSensorValue1()
+    {
+        return (decimalFormat.format(getSoilHumidity()+"%"));
+    }
+    public String getSensorValue2()
+    {
+        return (decimalFormat.format(getAirTemperature())+"ºC");
+    }
+    public String getSensorValue3()
+    {
+        return (decimalFormat.format(getLuminosity())+" Lux");
+    }
+    public String getSensorValue4()
+    {
+        return (decimalFormat.format(getAirHumidity())+"%");
+    }
+
     public double getSoilHumidity() {
         return soilHumidity;
     }

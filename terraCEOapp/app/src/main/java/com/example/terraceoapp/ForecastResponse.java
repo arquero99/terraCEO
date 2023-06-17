@@ -1,5 +1,6 @@
 package com.example.terraceoapp;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 public class ForecastResponse {
@@ -47,12 +48,36 @@ public class ForecastResponse {
 
     //////////////////CLASE DAILY DATA////////////////////////////
     public static class DailyData {
+        DecimalFormat decimalFormat = new DecimalFormat("#0.00");
         private List<String> time;
         private List<Double> temperature_2m_max;
         private List<Double> precipitation_sum;
         private List<Double>precipitation_probability_max;
         private List<Double> et0_fao_evapotranspiration;
 
+        public String getTime(int index)
+        {
+            return time.get(index);
+        }
+
+        public String getTemperatureMaxArray(int index)
+        {
+            return decimalFormat.format(precipitation_probability_max.get(index));
+        }
+
+        public String getPrecipitationSumArray(int index)
+        {
+            return decimalFormat.format(precipitation_sum.get(index));
+        }
+
+        public String getEvapotranspirationArray(int index)
+        {
+            return decimalFormat.format(et0_fao_evapotranspiration.get(index));
+        }
+        public String getPrecipitation_probability_max(int index)
+        {
+            return decimalFormat.format(precipitation_probability_max.get(index));
+        }
         public List<String> getTime() {
             return time;
         }

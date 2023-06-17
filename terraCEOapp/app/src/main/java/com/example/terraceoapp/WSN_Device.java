@@ -34,6 +34,39 @@ public class WSN_Device extends Device {
         setDescription("Water Supply Node. Provides data about water distribution network");
     }
 
+    public String getSensorName1()
+    {
+        return "Water Pressure";
+    }
+    public String getSensorName2()
+    {
+        return "Flow Rate";
+    }
+    public String getSensorName3()
+    {
+        return "pH";
+    }
+    public String getSensorName4()
+    {
+        return "TDS";
+    }
+    public String getSensorValue1()
+    {
+        return (decimalFormat.format(getWaterPressure())+" bar");
+    }
+    public String getSensorValue2()
+    {
+        return (getFlowRate() +" lpm");
+    }
+    public String getSensorValue3()
+    {
+        return (decimalFormat.format(getPh())+" pH");
+    }
+    public String getSensorValue4()
+    {
+        return(getTDS()+" mg/l");
+    }
+
     public double getWaterPressure() {
         return waterPreassure;
     }

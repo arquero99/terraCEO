@@ -125,18 +125,30 @@ public class MainActivity extends AppCompatActivity {
                 // Botón
                 Button buttonRefresh = findViewById(R.id.button_refresh);
                 buttonRefresh.setVisibility(View.VISIBLE);
-
                 buttonRefresh.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         dManager.obtainDevicesFromTB_API();
+                        buttonRefresh.setVisibility(View.INVISIBLE);
                     }
                 });
 
             }
             else
             {
-
+                Button buttonTelemetries = findViewById(R.id.getDeviceTelems);
+                buttonTelemetries.setVisibility(View.VISIBLE);
+                buttonTelemetries.setOnClickListener(
+                        new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v) {
+                        buttonTelemetries.setVisibility(View.INVISIBLE);
+                        Intent intent = new Intent(getApplicationContext(), DisplayDeviceDetails.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
                 MeteoAPIClient meteoClient=new MeteoAPIClient();    //Creamos API Meteo
                 for (Device dev : dManager.relatedDevices)
                 {

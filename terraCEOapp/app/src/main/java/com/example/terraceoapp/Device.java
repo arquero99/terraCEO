@@ -11,6 +11,7 @@ import com.google.gson.JsonParser;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import java.text.DecimalFormat;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 public abstract class Device
@@ -18,12 +19,12 @@ public abstract class Device
     private String id;
     private String name;
     private DeviceTypes type;
-
     private String jwt;
-
     private Location position;
-
     private String description;
+    private ForecastResponse deviceForecast;
+
+    DecimalFormat decimalFormat = new DecimalFormat("#0.00");
 
     Device(){this.id="NOID";}
     Device(String value){
@@ -125,4 +126,19 @@ public abstract class Device
     }
 
     public abstract void updateDevice();
+    public ForecastResponse getDeviceForecast() {
+        return deviceForecast;
+    }
+    public void setDeviceForecast(ForecastResponse deviceForecast) {
+        this.deviceForecast = deviceForecast;
+    }
+    public abstract String getSensorName1();
+    public abstract String getSensorName2();
+    public abstract String getSensorName3();
+    public abstract String getSensorName4();
+    public abstract String getSensorValue1();
+    public abstract String getSensorValue2();
+    public abstract String getSensorValue3();
+    public abstract String getSensorValue4();
+
 }
