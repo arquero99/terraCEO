@@ -45,7 +45,12 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        FirebaseApp.initializeApp(this);
+        try {
+            FirebaseApp.initializeApp(this);
+        } catch (IllegalStateException e) {
+            // Manejar la excepción
+            Toast.makeText(this, "Error initializing Firebase", Toast.LENGTH_SHORT).show();
+        }
 
         mAuth = FirebaseAuth.getInstance();
         editTextEmail = this.findViewById(R.id.LoginEmail);

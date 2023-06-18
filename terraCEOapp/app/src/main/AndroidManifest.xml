@@ -25,7 +25,10 @@
             android:exported="true"/>
         <activity
             android:name=".MainActivity"
-            android:exported="false" />
+            android:exported="true" />
+        <activity
+            android:name=".DisplayDeviceDetails"
+            android:exported="true" />
         <activity
             android:name=".LoginActivity"
             android:theme="@style/Theme.Material3.Light.NoActionBar"
