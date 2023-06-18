@@ -1,9 +1,11 @@
-package com.example.terraceoapp;//Clase abstracta con método updateDevice por implementar.
+package com.example.terraceoapp;
+
+//Clase abstracta con método updateDevice por implementar.
 //Este metodo realiza la llamada a la api
 //GET /api/plugins/telemetry/{entityType}/{entityId}/values/timeseries{?keys,useStrictDataTypes} Get latest time-series value (getLatestTimeseries)
 
-import android.graphics.drawable.Drawable;
 
+/*
 import com.example.terraceoapp.Location;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -13,11 +15,12 @@ import com.google.gson.JsonParser;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+*/
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 public abstract class Device implements Serializable
 {
     private String id;
@@ -67,6 +70,9 @@ public abstract class Device implements Serializable
 
     public void setJwt(String value){this.jwt=value;}
 
+    //MÉTODO PARA RECOGER DATOS GENERICOS DE DISPOSITIVO
+    /*
+
     public void updateDevice(String token) {
         String url = "https://thingsboard.cloud/api/plugins/telemetry/DEVICE/" + this.id + "/values/timeseries?useStrictDataTypes=false";
         OkHttpClient client = new OkHttpClient.Builder().build();
@@ -111,7 +117,7 @@ public abstract class Device implements Serializable
             e.printStackTrace();
         }
     }
-
+    */
     public Location getPosition() {
         return position;
     }
