@@ -1,0 +1,150 @@
+{
+	"info": {
+		"_postman_id": "b6229202-dd6e-4639-ad93-1ad1dd686f0b",
+		"name": "terraCEO",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "TB_takeToken",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "username",
+						"value": "j.arquero@alumnos.upm.es",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "password",
+						"value": "bewatermyfriend",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"username\": \"j.arquero@alumnos.upm.es\",\r\n  \"password\": \"bewatermyfriend\"\r\n}"
+				},
+				"url": {
+					"raw": "https://thingsboard.cloud:443/api/auth/login",
+					"protocol": "https",
+					"host": [
+						"thingsboard",
+						"cloud"
+					],
+					"port": "443",
+					"path": [
+						"api",
+						"auth",
+						"login"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "j.arquero@alumnos.upm.es",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "bewatermyfriend",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Obtener Dispositivos relacionados con user",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "OpenMeteo",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.open-meteo.com/v1/forecast?latitude=40.42&longitude=-3.70&hourly=precipitation_probability,precipitation,evapotranspiration",
+					"protocol": "https",
+					"host": [
+						"api",
+						"open-meteo",
+						"com"
+					],
+					"path": [
+						"v1",
+						"forecast"
+					],
+					"query": [
+						{
+							"key": "latitude",
+							"value": "40.42"
+						},
+						{
+							"key": "longitude",
+							"value": "-3.70"
+						},
+						{
+							"key": "hourly",
+							"value": "precipitation_probability,precipitation,evapotranspiration"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Obtener última telemetría de dispositivo Copy",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://thingsboard.cloud:443/api/plugins/telemetry/DEVICE/{{deviceId}}/values/timeseries?useStrictDataTypes=false",
+					"protocol": "https",
+					"host": [
+						"thingsboard",
+						"cloud"
+					],
+					"port": "443",
+					"path": [
+						"api",
+						"plugins",
+						"telemetry",
+						"DEVICE",
+						"{{deviceId}}",
+						"values",
+						"timeseries"
+					],
+					"query": [
+						{
+							"key": "useStrictDataTypes",
+							"value": "false",
+							"description": "Habilita o deshabilita la conversión de los valores recibidos en la telemetría."
+						}
+					]
+				},
+				"description": "Obtiene la última telemetría mandada por el dispositivo indicado mediante su Id, que contiene todos los datos obtenidos por los sensores instalados en dicho dispositivo."
+			},
+			"response": []
+		}
+	]
+}
