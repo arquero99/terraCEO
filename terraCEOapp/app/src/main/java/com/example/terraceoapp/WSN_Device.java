@@ -2,11 +2,18 @@ package com.example.terraceoapp;//Clase que hereda de device e implemeta el meto
 //lamada a la api GET/api/plugins/telemetry/{entityType}/{entityId}/values/timeseries{?keys,useStrictDataTypes} Get latest time-series value (getLatestTimeseries)
 //Realizando la conversión propia a objeto WSN
 
+
+
+import android.content.Context;
+
+import androidx.core.content.res.ResourcesCompat;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -14,24 +21,19 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class WSN_Device extends Device {
+public class WSN_Device extends Device implements Serializable{
     private double waterPreassure;
     private int flowRate;
     private double ph;
     private int TDS;
 
-    public WSN_Device(String value) {
-        super(value);
-    }
-
-    public WSN_Device(String valueId, DeviceTypes valueType) {
-        super(valueId, valueType);
-    }
-
     public WSN_Device(String valueId, DeviceTypes valueType, String valueName) {
         super(valueId, valueType);
         setName(valueName);
         setDescription("Water Supply Node. Provides data about water distribution network");
+        getPosition().setName(valueName);
+        setType(DeviceTypes.WSN);
+        //setIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.wsn_icon, null));
     }
 
     public String getSensorName1()
@@ -176,5 +178,4 @@ public class WSN_Device extends Device {
             }
         });
     }
-
 }

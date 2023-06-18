@@ -3,6 +3,7 @@ package com.example.terraceoapp;
 public class Location {
     private double Latitude;
     private double Longitude;
+    private String name;
     public Location(double latitude, double longitude) {
         Latitude = latitude;
         Longitude = longitude;
@@ -18,5 +19,13 @@ public class Location {
     }
     public void setLongitude(double longitude) {
         Longitude = longitude;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

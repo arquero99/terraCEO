@@ -5,6 +5,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -15,21 +16,18 @@ import okhttp3.Response;
 //Clase que hereda de device e implemeta el metodo updatedevice que realiza
 //lamada a la api GET/api/plugins/telemetry/{entityType}/{entityId}/values/timeseries{?keys,useStrictDataTypes} Get latest time-series value (getLatestTimeseries)
 //Realizando la conversión propia a objeto Spike
-public class SPIKE_Device extends Device {
+public class SPIKE_Device extends Device implements Serializable {
     private double soilHumidity;
     private double airTemperature;
     private double luminosity;
     private double airHumidity;
-    public SPIKE_Device(String value) {
-        super(value);
-    }
-
-    public SPIKE_Device(String valueId, DeviceTypes valueType) {
-        super(valueId, valueType);
-    }
 
     public SPIKE_Device(String valueId, DeviceTypes valueType, String valueName) {
-        super(valueId, valueType, valueName);
+        super(valueId, valueType);
+        setName(valueName);
+        setDescription("Soil Spike Node. Provides data about soil status and its environment in a particular point");
+        getPosition().setName(valueName);
+        setType(DeviceTypes.SPIKE);
     }
     public String getSensorName1()
     {

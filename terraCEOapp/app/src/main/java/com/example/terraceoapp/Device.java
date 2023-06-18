@@ -2,6 +2,8 @@ package com.example.terraceoapp;//Clase abstracta con método updateDevice por i
 //Este metodo realiza la llamada a la api
 //GET /api/plugins/telemetry/{entityType}/{entityId}/values/timeseries{?keys,useStrictDataTypes} Get latest time-series value (getLatestTimeseries)
 
+import android.graphics.drawable.Drawable;
+
 import com.example.terraceoapp.Location;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -11,10 +13,12 @@ import com.google.gson.JsonParser;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-public abstract class Device
+public abstract class Device implements Serializable
 {
     private String id;
     private String name;
@@ -23,7 +27,6 @@ public abstract class Device
     private Location position;
     private String description;
     private ForecastResponse deviceForecast;
-
     DecimalFormat decimalFormat = new DecimalFormat("#0.00");
 
     Device(){this.id="NOID";}
@@ -141,4 +144,11 @@ public abstract class Device
     public abstract String getSensorValue3();
     public abstract String getSensorValue4();
 
+    public DeviceTypes getType() {
+        return type;
+    }
+
+    public void setType(DeviceTypes type) {
+        this.type = type;
+    }
 }

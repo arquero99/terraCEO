@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
@@ -28,13 +29,15 @@ import android.widget.Button;
 import android.widget.Toast;
 
 
-
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements Marker.OnMarkerClickListener {
     private MapView map;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 100;
     LocationManager mLocationManager;
     List<Location> locationsList = new ArrayList<>();
-    List<GeoPoint> puntosRuta = new ArrayList<>();
+
+    DeviceManager dManager;
+
+    //List<GeoPoint> puntosRuta = new ArrayList<>();
     //pwdmanager testConfig=new pwdmanager();
 
     @Override
@@ -79,38 +82,30 @@ public class MainActivity extends AppCompatActivity {
 
         // Obtener la ubicación actual del dispositivo
         Location locActual = null;
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)       // Solicitar permiso de ubicación si aún no se ha otorgado
                 != PackageManager.PERMISSION_GRANTED) {
-            // Solicitar permiso de ubicación si aún no se ha otorgado
             ActivityCompat.requestPermissions(this,
                     new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                     LOCATION_PERMISSION_REQUEST_CODE);
         } else {
-            // Los permisos ya están otorgados, puedes obtener la ubicación
-            locActual = getLastKnownLocation();
+            locActual = getLastKnownLocation();     // Los permisos ya están otorgados, puedes obtener la ubicación
         }
-
-        // Crear una lista de ubicaciones (incluyendo el punto de inicio y la ubicación actual)
-        locationsList.add(new Location(40.38999, -3.65518));
+        //locationsList.add(new Location(40.38999, -3.65518));        // Crear una lista de ubicaciones (incluyendo el punto de inicio y la ubicación actual)
         locationsList.add(locActual);
 
-        //Hay que probar esta:
-        DeviceManager dManager=new DeviceManager(email,password);
-        if(!dManager.obtainTokenFromTB_API())
+        dManager = new DeviceManager(email, password);
+        if (!dManager.obtainTokenFromTB_API()) //Mostrar Mensaje cuenta no corresponde con TB account. Volver al login
         {
-            //Mostrar Mensaje cuenta no corresponde con TB account. Volver al login
-            Toast.makeText(MainActivity.this, "La cuenta no corresponde con TB account", Toast.LENGTH_SHORT).show();// Mostrar el mensaje en pantalla
-            // Logout de Firebase
-            FirebaseAuth.getInstance().signOut();
-            // Redirigir al inicio de sesión
-            Intent intent2 = new Intent(MainActivity.this, LoginActivity.class);
+            Toast.makeText(MainActivity.this, "La cuenta no corresponde con TB account", Toast.LENGTH_SHORT).show(); //Mostrar el mensaje en pantalla
+            FirebaseAuth.getInstance().signOut();   //Logout FireBase
+            Intent intent2 = new Intent(MainActivity.this, LoginActivity.class);  // Redirigir al inicio de sesión
             startActivity(intent2);
             finish(); // Opcionalmente, finalizar la actividad actual para que no se pueda volver atrás
         }
         else
         {
             dManager.obtainDevicesFromTB_API();
-            if(dManager.relatedDevices.isEmpty())
+            if (dManager.relatedDevices.isEmpty())
             {
                 Toast.makeText(MainActivity.this, "No se han encontrado dispositivos", Toast.LENGTH_SHORT).show(); // Mostrar mensaje de "No se han encontrado dispositivos"
                 Button buttonRefresh = findViewById(R.id.button_refresh); //Botón de refresco
@@ -124,42 +119,41 @@ public class MainActivity extends AppCompatActivity {
                 });
 
             }
-            else
+            else //Lista de dispositivos relacionados no vacía
             {
-                MeteoAPIClient meteoClient=new MeteoAPIClient();    //Creamos API Meteo
-                for (Device dev : dManager.relatedDevices)
-                {
-                    Location devLocation=dev.getPosition();
-                    locationsList.add(devLocation);
-                    meteoClient.obtainForecast(devLocation.getLatitude(), devLocation.getLongitude());
+                MeteoAPIClient meteoClient = new MeteoAPIClient();    //Creamos API Meteo
+                for (Device dev : dManager.relatedDevices) {
+                    Location devLocation = dev.getPosition();
+                    meteoClient.obtainForecast(dev); //Levar al onClick.
                     Marker m = new Marker(map);
                     m.setPosition(new GeoPoint(devLocation.getLatitude(), devLocation.getLongitude()));
                     m.setTitle(dev.getName());
-                }
-                Button buttonTelemetries = findViewById(R.id.getDeviceTelems);
-                buttonTelemetries.setVisibility(View.VISIBLE);
-                buttonTelemetries.setOnClickListener(
-                        new View.OnClickListener()
-                {
-                    @Override
-                    public void onClick(View v) {
-                        buttonTelemetries.setVisibility(View.INVISIBLE);
-                        Intent intent = new Intent(getApplicationContext(), DisplayDeviceDetails.class);
-                        startActivity(intent);
-                        finish();
+                    if(dev.getId()!=null)m.setSnippet(dev.getId());
+                    if(dev.getDescription()!=null)m.setSubDescription(dev.getDescription());
+                    switch (dev.getType())
+                    {
+                        case WSN:
+                            m.setIcon(ResourcesCompat.getDrawable(getResources(), R.drawable.wsn_icon, null));
+                            break;
+                        case METEO:
+                            m.setIcon(ResourcesCompat.getDrawable(getResources(),R.drawable.meteo_icon,null));
+                            break;
+                        case SPIKE:
+                            m.setIcon(ResourcesCompat.getDrawable(getResources(),R.drawable.spike_icon,null));
+                        default:
+                            break;
                     }
-                });
+                    map.getOverlays().add(m);
+                }
 
             }
         }
-        // Agregar marcadores y puntos de ruta para cada ubicación en la lista
+        // Agregar marcadores para cada ubicación en la lista
         for (Location loc : locationsList) {
             Marker m = new Marker(map);
             m.setPosition(new GeoPoint(loc.getLatitude(), loc.getLongitude()));
-            //m.setTitle(loc.getName());++Añadir a la clase  
-            //m.setSnippet(loc.getDescription());
             map.getOverlays().add(m);
-            puntosRuta.add(new GeoPoint(loc.getLatitude(), loc.getLongitude()));
+            //puntosRuta.add(new GeoPoint(loc.getLatitude(), loc.getLongitude()));
         }
     }
 
@@ -179,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private Location getLastKnownLocation() {
-        mLocationManager = (LocationManager)getApplicationContext().getSystemService(LOCATION_SERVICE);
+        mLocationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
         List<String> providers = mLocationManager.getProviders(true);
         android.location.Location bestLocation = null;
         Location myLocation = null;
@@ -195,12 +189,32 @@ public class MainActivity extends AppCompatActivity {
 // Found best last known location: %s", l);
                     bestLocation = l;
                 }
-                if (bestLocation != null){
+                if (bestLocation != null) {
                     myLocation = new Location(bestLocation.getLatitude(),
                             bestLocation.getLongitude());
                 }
             }
         }
         return myLocation;
-                }
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker, MapView mapView) {
+        Device targetDevice = dManager.searchDeviceByName(marker.getTitle());
+        Button buttonTelemetries = findViewById(R.id.getDeviceTelems);
+        buttonTelemetries.setText("Telemetries");
+        buttonTelemetries.setVisibility(View.VISIBLE);
+        buttonTelemetries.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        buttonTelemetries.setVisibility(View.INVISIBLE);
+                        Intent intent = new Intent(getApplicationContext(), DisplayDeviceDetails.class);
+                        intent.putExtra("device",targetDevice);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+        return false;
+    }
 }

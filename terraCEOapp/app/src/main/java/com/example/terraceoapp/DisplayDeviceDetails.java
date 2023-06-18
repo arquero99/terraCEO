@@ -37,6 +37,10 @@ public class DisplayDeviceDetails extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(getIntent().getExtras()!=null)
+        {
+            this.targetDevice=(Device) getIntent().getSerializableExtra("device"); //Recibe Device del cual mostrar detalles.
+        }
         //Nombre del dipositivo
         deviceName = findViewById(R.id.deviceName);
         deviceName.setText(targetDevice.getName());

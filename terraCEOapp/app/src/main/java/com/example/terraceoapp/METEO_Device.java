@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -14,21 +15,20 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class METEO_Device extends Device {
+public class METEO_Device extends Device implements Serializable {
 
     private double baromPressure;
     private double lightLux;
     private boolean raining;
     private int wind_KPH;
 
-    public METEO_Device(String value) {
-        super(value);
-    }
-
-    public METEO_Device(String valueId, DeviceTypes valueType) {
+    public METEO_Device(String valueId, DeviceTypes valueType, String valueName) {
         super(valueId, valueType);
+        setName(valueName);
+        setDescription("Meteorological Station. Gives information about current weather an climate status.");
+        getPosition().setName(valueName);
+        setType(DeviceTypes.METEO);
     }
-
     public String getSensorName1()
     {
         return "Barometric Pressure";
@@ -95,12 +95,6 @@ public class METEO_Device extends Device {
 
     public void setWind_KPH(int wind_KPH) {
         this.wind_KPH = wind_KPH;
-    }
-
-    public METEO_Device(String valueId, DeviceTypes valueType, String valueName) {
-        super(valueId, valueType);
-        setName(valueName);
-        setDescription("Meteorological Satation. Gives infomation about current weather an clima status.");
     }
 
 

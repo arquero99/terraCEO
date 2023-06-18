@@ -56,7 +56,9 @@ public class DeviceManager
     {
         setUsername_TB(username);
         setPassword_TB(password);
-        numOfMETEOS=numOfSPIKES=numOfWSN=0;
+        setNumOfMETEOS(0);
+        setNumOfSPIKES(0);
+        setNumOfWSN(0);
     }
 
     public String getUsername_TB() {
@@ -161,14 +163,14 @@ public class DeviceManager
                                 WSN_Device wsnDev = new WSN_Device(filteredDevice.id,DeviceTypes.WSN,wsnName);
                                 wsnDev.setJwt(getJwt_TB());
                                 relatedDevices.add(wsnDev);
-                                numOfWSN++;
+                                setNumOfWSN(getNumOfWSN()+1);
                             }
                             else if (filteredDevice.type.equals("METEO")) {
                                 String meteoName="METEO Station " + numOfMETEOS;
                                 METEO_Device meteoDev = new METEO_Device(filteredDevice.id, DeviceTypes.METEO, meteoName);
                                 meteoDev.setJwt(getJwt_TB());
                                 relatedDevices.add(meteoDev);
-                                numOfMETEOS++;
+                                setNumOfMETEOS(getNumOfMETEOS()+1);
                             }
                             else if(filteredDevice.type.equals("SPIKE"))
                             {
@@ -176,7 +178,7 @@ public class DeviceManager
                                 SPIKE_Device spikeDev=new SPIKE_Device(filteredDevice.id, DeviceTypes.SPIKE, spikeName);
                                 spikeDev.setJwt(getJwt_TB());
                                 relatedDevices.add(spikeDev);
-                                numOfSPIKES++;
+                                setNumOfSPIKES(getNumOfSPIKES()+1);
                             }
                         }
 
@@ -215,6 +217,19 @@ public class DeviceManager
 
     public void setNumOfMETEOS(int numOfMETEOS) {
         this.numOfMETEOS = numOfMETEOS;
+    }
+
+    public Device searchDeviceByName(String targetName)
+    {
+        Device targetDevice=null;
+        for (Device device:relatedDevices)
+        {
+            if (device.getName().equals(targetName))
+            {
+                targetDevice=device;
+            }
+        }
+        return targetDevice;
     }
 
     //////////CLASES E INTERFACES AUXILIARES
