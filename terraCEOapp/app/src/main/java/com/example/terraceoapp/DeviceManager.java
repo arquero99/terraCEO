@@ -14,8 +14,9 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
+import retrofit2.http.Query;
 
-    /*
+/*
      * //Al iniciar:
      * 1. Obtener JWT mediante:           -> getTokenFromTB_API();
      *      POST /api/auth/login Login method to get user JWT token data
@@ -34,6 +35,7 @@ import retrofit2.http.POST;
 
      */
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -134,67 +136,60 @@ public class DeviceManager
         return true;
     }
 
-    public void obtainDevicesFromTB_API() {
-        OkHttpClient client = new OkHttpClient();
-
+    public void obtainDevicesFromTB_API()
+    {
+        String bearerToken=getJwt_TB();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
-                .client(client)
                 .build();
+        DeviceManagerApiService apiService = retrofit.create(DeviceManagerApiService.class);
+        Call<DeviceDataResponse> call = apiService.getDevices("application/json", "Bearer " + bearerToken, 100, 0);
 
-        DeviceManagerApiService deviceManagerApiService = retrofit.create(DeviceManagerApiService.class);
-        String authHeaderValue = "Bearer " + getJwt_TB();
-        Call<List<DeviceTypeResponse>> call = deviceManagerApiService.getDeviceTypes(authHeaderValue);
-
-        call.enqueue(new Callback<List<DeviceTypeResponse>>() {
-            @Override
-            public void onResponse(Call<List<DeviceTypeResponse>> call, Response<List<DeviceTypeResponse>> response) {
-                if (response.isSuccessful()) {
-                    List<DeviceTypeResponse> deviceTypes = response.body();
-                    if (deviceTypes != null) {
-                        List<DeviceTypeResponse> filteredDeviceTypes = deviceTypes.stream()
-                                .filter(deviceType -> "DEVICE".equals(deviceType.getEntityType()))
-                                .collect(Collectors.toList());
-                        for (DeviceTypeResponse filteredDevice : filteredDeviceTypes) {
-                            if (filteredDevice.type.equals("WSN"))
-                            {
-                                String wsnName="WSN Station "+numOfWSN;
-                                WSN_Device wsnDev = new WSN_Device(filteredDevice.id,DeviceTypes.WSN,wsnName);
-                                wsnDev.setJwt(getJwt_TB());
-                                relatedDevices.add(wsnDev);
-                                setNumOfWSN(getNumOfWSN()+1);
-                            }
-                            else if (filteredDevice.type.equals("METEO")) {
-                                String meteoName="METEO Station " + numOfMETEOS;
-                                METEO_Device meteoDev = new METEO_Device(filteredDevice.id, DeviceTypes.METEO, meteoName);
-                                meteoDev.setJwt(getJwt_TB());
-                                relatedDevices.add(meteoDev);
-                                setNumOfMETEOS(getNumOfMETEOS()+1);
-                            }
-                            else if(filteredDevice.type.equals("SPIKE"))
-                            {
-                                String spikeName="SPIKE Sensor "+ numOfSPIKES;
-                                SPIKE_Device spikeDev=new SPIKE_Device(filteredDevice.id, DeviceTypes.SPIKE, spikeName);
-                                spikeDev.setJwt(getJwt_TB());
-                                relatedDevices.add(spikeDev);
-                                setNumOfSPIKES(getNumOfSPIKES()+1);
-                            }
-                        }
-
-
+        try {
+            Response<DeviceDataResponse> response = call.execute();
+            if (response.isSuccessful()) {
+                DeviceDataResponse dataResponse = response.body();
+                List<ObtainedDevice> devices = dataResponse.getData();
+                for (ObtainedDevice device : devices) {
+                    System.out.println("ID: " + device.getDeviceId().getId());
+                    System.out.println("Name: " + device.getName());
+                    System.out.println("Type: " + device.getType());
+                    System.out.println();
+                    if(device.getName().contains("WSN")||device.getType().equals("WSN"))
+                    {
+                        String wsnName="WSN Station "+numOfWSN;
+                        WSN_Device wsnDev = new WSN_Device(device.getDeviceId().getId(),DeviceTypes.WSN,wsnName);
+                        wsnDev.setJwt(getJwt_TB());
+                        relatedDevices.add(wsnDev);
+                        setNumOfWSN(getNumOfWSN()+1);
                     }
-                } else {
-                    // Maneja el caso de respuesta no exitosa
+                    else if(device.getName().contains("SPIKE")||device.getType().equals("SPIKE"))
+                    {
+                        String spikeName="SPIKE Sensor "+ numOfSPIKES;
+                        SPIKE_Device spikeDev=new SPIKE_Device(device.getDeviceId().getId(), DeviceTypes.SPIKE, spikeName);
+                        spikeDev.setJwt(getJwt_TB());
+                        relatedDevices.add(spikeDev);
+                        setNumOfSPIKES(getNumOfSPIKES()+1);
+                    }
+                    else if(device.getName().contains("METEO")||device.getType().equals("METEO"))
+                    {
+                        String meteoName="METEO Station " + numOfMETEOS;
+                        METEO_Device meteoDev = new METEO_Device(device.getDeviceId().getId(), DeviceTypes.METEO, meteoName);
+                        meteoDev.setJwt(getJwt_TB());
+                        relatedDevices.add(meteoDev);
+                        setNumOfMETEOS(getNumOfMETEOS()+1);
+                    }
                 }
+            } else {
+                System.out.println("Request failed with code: " + response.code());
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-            @Override
-            public void onFailure(Call<List<DeviceTypeResponse>> call, Throwable t) {
-                // Maneja la falla en la solicitud
-            }
-        });
-    };
+    }
+
     public int getNumOfWSN() {
         return numOfWSN;
     }
@@ -237,6 +232,14 @@ public class DeviceManager
         @Headers("Content-Type: text/plain")
         @POST("auth/login")
         Call<DeviceManagerApiResponse> getToken(@Body RequestBody requestBody);
+
+        @GET("user/devices")
+        Call<DeviceDataResponse> getDevices(
+                @Header("accept") String accept,
+                @Header("Authorization") String authorization,
+                @Query("pageSize") int pageSize,
+                @Query("page") int page
+        );
 
         @GET("device/types")
         Call<List<DeviceTypeResponse>> getDeviceTypes(@Header(AUTH_HEADER) String authorizationHeader);
@@ -305,6 +308,60 @@ public class DeviceManager
 
         public String getId() {
             return id;
+        }
+    }
+
+    public class DeviceDataResponse {
+        private List<ObtainedDevice> data;
+        private int totalPages;
+        private int totalElements;
+        private boolean hasNext;
+
+        public List<ObtainedDevice> getData() {
+            return data;
+        }
+
+        public int getTotalPages() {
+            return totalPages;
+        }
+
+        public int getTotalElements() {
+            return totalElements;
+        }
+
+        public boolean hasNext() {
+            return hasNext;
+        }
+    }
+    public class DeviceId {
+        private String entityType;
+        private String id;
+
+        public String getEntityType() {
+            return entityType;
+        }
+
+        public String getId() {
+            return id;
+        }
+    }
+
+    public class ObtainedDevice {
+        private DeviceId id;
+        private String name;
+
+        private String type;
+
+        public DeviceId getDeviceId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getType() {
+            return type;
         }
     }
 }

@@ -8,6 +8,7 @@ import androidx.core.content.res.ResourcesCompat;
 
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 //
@@ -216,5 +217,27 @@ public class MainActivity extends AppCompatActivity implements Marker.OnMarkerCl
                     }
                 });
         return false;
+    }
+
+    private class NetworkTask extends AsyncTask<Void, Void, Void> {
+    //CLASE SUGERIDA POR CHATGPT. NO SE SI ES LA MANERA DE SOLUCIONAR. LUISO?
+        @Override
+        protected Void doInBackground(Void... params) {
+            // Aquí debes mover el código que realiza las operaciones de red
+            // por ejemplo, llamadas a la API de TB o cualquier otra operación de red
+            dManager.obtainDevicesFromTB_API();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            // Aquí puedes realizar cualquier acción que necesites después de completar las operaciones de red
+            // Por ejemplo, actualizar la interfaz de usuario con los datos obtenidos
+            if (dManager.relatedDevices.isEmpty()) {
+                // ...
+            } else {
+                // ...
+            }
+        }
     }
 }
