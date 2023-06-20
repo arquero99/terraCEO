@@ -1,6 +1,14 @@
 package com.example.terraceoapp;
 
+import android.content.Intent;
+import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.annotations.SerializedName;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
@@ -38,18 +46,17 @@ import retrofit2.http.Query;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+enum ConnStatus{Unconnected, Refused, Connected}
 public class DeviceManager
 {
-    private static final String BASE_URL = "https://thingsboard.cloud/api/";
+    private static final String BASE_URL = "https://thingsboard.cloud:443/api/";
     private static final String AUTH_HEADER = "Authorization";
-
+    private ConnStatus connected=ConnStatus.Unconnected;
     public List <Device> relatedDevices= new ArrayList<>();
     private String username_TB;
     private String password_TB;
     private String jwt_TB;
     private String refresh_jwt_TB;
-
     private int numOfWSN;
     private int numOfSPIKES;
     private int numOfMETEOS;
@@ -61,6 +68,7 @@ public class DeviceManager
         setNumOfMETEOS(0);
         setNumOfSPIKES(0);
         setNumOfWSN(0);
+        setConnected(ConnStatus.Unconnected);
     }
 
     public String getUsername_TB() {
@@ -95,18 +103,23 @@ public class DeviceManager
         this.refresh_jwt_TB = refresh_jwt_TB;
     }
 
-    public boolean obtainTokenFromTB_API() {
+    public void obtainTokenFromTB_API() {
         OkHttpClient client = new OkHttpClient();
+        MediaType mediaType = MediaType.parse("application/json");
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("username", getUsername_TB());
+            requestBody.put("password", getPassword_TB());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-        MediaType mediaType = MediaType.parse("text/plain");
-        String requestBody = "{\"username\": \"" + getUsername_TB() + "\", \"password\": \"" + getPassword_TB() + "\"}";
-
-        RequestBody body = RequestBody.create(mediaType, requestBody);
+        RequestBody body = RequestBody.create(mediaType, requestBody.toString());
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
                 .client(client)
+                .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
         DeviceManagerApiService deviceManagerApiService = retrofit.create(DeviceManagerApiService.class);
@@ -115,30 +128,36 @@ public class DeviceManager
         call.enqueue(new Callback<DeviceManagerApiResponse>() {
             @Override
             public void onResponse(Call<DeviceManagerApiResponse> call, Response<DeviceManagerApiResponse> response) {
-                if (response.isSuccessful()) {
+                if (response.isSuccessful())
+                {
                     DeviceManagerApiResponse deviceManagerApiResponse = response.body();
                     if (deviceManagerApiResponse != null) {
                         setJwt_TB(deviceManagerApiResponse.getToken());
                         setRefresh_jwt_TB(deviceManagerApiResponse.getRefreshToken());
-                        obtainDevicesFromTB_API();
+                        setConnected(ConnStatus.Connected);
+                    } else {
+                        setConnected(ConnStatus.Refused);
                     }
-                } else {
-                    // Maneja el caso de respuesta no exitosa (LANZAR MSG USUARIO/PWD PROPORCIONADOS NO CORRESPONDEN A REGISTRO EN TB)
                 }
-            }
+                    else
+                    {
+                    setConnected(ConnStatus.Refused);
+                    }
+                 };
 
             @Override
             public void onFailure(Call<DeviceManagerApiResponse> call, Throwable t) {
                 // Maneja la falla en la solicitud
+                setConnected(ConnStatus.Refused);
             }
         });
-
-        return true;
     }
+
 
     public void obtainDevicesFromTB_API()
     {
         String bearerToken=getJwt_TB();
+        relatedDevices.clear();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -150,35 +169,32 @@ public class DeviceManager
             Response<DeviceDataResponse> response = call.execute();
             if (response.isSuccessful()) {
                 DeviceDataResponse dataResponse = response.body();
-                List<ObtainedDevice> devices = dataResponse.getData();
-                for (ObtainedDevice device : devices) {
-                    System.out.println("ID: " + device.getDeviceId().getId());
-                    System.out.println("Name: " + device.getName());
-                    System.out.println("Type: " + device.getType());
-                    System.out.println();
-                    if(device.getName().contains("WSN")||device.getType().equals("WSN"))
-                    {
-                        String wsnName="WSN Station "+numOfWSN;
-                        WSN_Device wsnDev = new WSN_Device(device.getDeviceId().getId(),DeviceTypes.WSN,wsnName);
-                        wsnDev.setJwt(getJwt_TB());
-                        relatedDevices.add(wsnDev);
-                        setNumOfWSN(getNumOfWSN()+1);
-                    }
-                    else if(device.getName().contains("SPIKE")||device.getType().equals("SPIKE"))
-                    {
-                        String spikeName="SPIKE Sensor "+ numOfSPIKES;
-                        SPIKE_Device spikeDev=new SPIKE_Device(device.getDeviceId().getId(), DeviceTypes.SPIKE, spikeName);
-                        spikeDev.setJwt(getJwt_TB());
-                        relatedDevices.add(spikeDev);
-                        setNumOfSPIKES(getNumOfSPIKES()+1);
-                    }
-                    else if(device.getName().contains("METEO")||device.getType().equals("METEO"))
-                    {
-                        String meteoName="METEO Station " + numOfMETEOS;
-                        METEO_Device meteoDev = new METEO_Device(device.getDeviceId().getId(), DeviceTypes.METEO, meteoName);
-                        meteoDev.setJwt(getJwt_TB());
-                        relatedDevices.add(meteoDev);
-                        setNumOfMETEOS(getNumOfMETEOS()+1);
+                if(dataResponse!=null) {
+                    List<ObtainedDevice> devices = dataResponse.getData();
+                    for (ObtainedDevice device : devices) {
+                        System.out.println("ID: " + device.getDeviceId().getId());
+                        System.out.println("Name: " + device.getName());
+                        System.out.println("Type: " + device.getType());
+                        System.out.println();
+                        if (device.getName().contains("WSN") || device.getType().equals("WSN")) {
+                            String wsnName = "WSN Station " + numOfWSN;
+                            WSN_Device wsnDev = new WSN_Device(device.getDeviceId().getId(), DeviceTypes.WSN, wsnName);
+                            wsnDev.setJwt(getJwt_TB());
+                            relatedDevices.add(wsnDev);
+                            setNumOfWSN(getNumOfWSN() + 1);
+                        } else if (device.getName().contains("SPIKE") || device.getType().equals("SPIKE")) {
+                            String spikeName = "SPIKE Sensor " + numOfSPIKES;
+                            SPIKE_Device spikeDev = new SPIKE_Device(device.getDeviceId().getId(), DeviceTypes.SPIKE, spikeName);
+                            spikeDev.setJwt(getJwt_TB());
+                            relatedDevices.add(spikeDev);
+                            setNumOfSPIKES(getNumOfSPIKES() + 1);
+                        } else if (device.getName().contains("METEO") || device.getType().equals("METEO")) {
+                            String meteoName = "METEO Station " + numOfMETEOS;
+                            METEO_Device meteoDev = new METEO_Device(device.getDeviceId().getId(), DeviceTypes.METEO, meteoName);
+                            meteoDev.setJwt(getJwt_TB());
+                            relatedDevices.add(meteoDev);
+                            setNumOfMETEOS(getNumOfMETEOS() + 1);
+                        }
                     }
                 }
             } else {
@@ -227,6 +243,14 @@ public class DeviceManager
         return targetDevice;
     }
 
+    public ConnStatus getConnectedStatus() {
+        return connected;
+    }
+
+    public void setConnected(ConnStatus conStat) {
+        this.connected = conStat;
+    }
+
     //////////CLASES E INTERFACES AUXILIARES
     public interface DeviceManagerApiService {
         @Headers("Content-Type: text/plain")
@@ -252,12 +276,19 @@ public class DeviceManager
         @SerializedName("refreshToken")
         private String refreshToken;
 
+        @SerializedName("scope")
+        private String scope;
+
         public String getToken() {
             return token;
         }
 
         public String getRefreshToken() {
             return refreshToken;
+        }
+
+        public String getScope() {
+            return scope;
         }
     }
 

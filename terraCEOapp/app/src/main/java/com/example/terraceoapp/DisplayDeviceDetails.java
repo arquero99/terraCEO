@@ -8,6 +8,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class DisplayDeviceDetails extends AppCompatActivity {
+    MeteoAPIClient meteoClient;    //Creamos API Meteo
     public Device targetDevice;
     private Handler handler;
     private Runnable runnable;
@@ -54,6 +55,7 @@ public class DisplayDeviceDetails extends AppCompatActivity {
         sensor4Name = findViewById(R.id.sensorName4);
         sensor4Name.setText(targetDevice.getSensorName4());
         //Forecast. No se actualiza
+        meteoClient.obtainForecast(this.targetDevice);
         displayForecast();
         // Iniciar el Handler
         handler = new Handler();
