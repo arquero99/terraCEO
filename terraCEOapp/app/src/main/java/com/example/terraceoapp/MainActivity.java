@@ -25,6 +25,8 @@ import org.osmdroid.views.overlay.Marker;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.content.Intent;
 import android.os.Handler;
@@ -44,11 +46,12 @@ public class MainActivity extends AppCompatActivity implements Marker.OnMarkerCl
     NetworkTask obtainDevices;
     private Handler handler;
     private Runnable periodicTask;
+    private ProgressBar spinner;
+    private Timer timer;
 
-    //private ProgressBar progressBar;
 
     //List<GeoPoint> puntosRuta = new ArrayList<>();
-    //pwdmanager testConfig=new pwdmanager();
+    Credentials creds=new Credentials();
 
     @Override
     protected void onDestroy() {
@@ -64,16 +67,18 @@ public class MainActivity extends AppCompatActivity implements Marker.OnMarkerCl
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Establecer el diseño de la actividad principal
-        setContentView(R.layout.activity_main);
-        //progressBar = findViewById(R.id.progressBar);
-        //progressBar.setVisibility(View.GONE);
-
         //Obtener valores de email y contraseña
         Intent intent = getIntent();
         String email = intent.getStringExtra("email");
         String password = intent.getStringExtra("password");
 
+        dManager=new DeviceManager(creds.email, creds.pwd);
+        dManager.obtainTokenFromTB_API();
+
+        // Establecer el diseño de la actividad principal
+        setContentView(R.layout.activity_main);
+        spinner = (ProgressBar)findViewById(R.id.progressBar1);
+        spinner.setVisibility(View.GONE);
 
         // Configurar el agente de usuario de la biblioteca OSMDroid
         Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
@@ -107,18 +112,36 @@ public class MainActivity extends AppCompatActivity implements Marker.OnMarkerCl
         locationsList.add(new Location(40.38999, -3.65518));        // Crear una lista de ubicaciones (incluyendo el punto de inicio y la ubicación actual)
         locationsList.add(locActual);
 
-        pwdmanager test=new pwdmanager();
+        boolean continueLoop=dManager.getConnectedStatus()!=ConnStatus.Connected;
+        boolean displayMsg=true;
 
-        dManager = new DeviceManager(test.user, test.pwd);
-
-        dManager.obtainTokenFromTB_API();
-        boolean continueLoop=true;
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        checkConnectionStatus();
+                    }
+                });
+            }
+        }, 0, 1000);
+        /*
         while(continueLoop)
         {
-            //progressBar.setVisibility(View.VISIBLE);
-            Toast.makeText(MainActivity.this,"Conectando",Toast.LENGTH_SHORT).show();
+            if(spinner.getVisibility()!=View.VISIBLE)
+            {
+                spinner.setVisibility(View.VISIBLE);
+            }
+            if(displayMsg)
+            {
+                Toast.makeText(MainActivity.this,"Conectando",Toast.LENGTH_SHORT).show();
+                displayMsg=false;
+            }
             if(dManager.getConnectedStatus()==ConnStatus.Refused)
             {
+                spinner.setVisibility(View.GONE);
                 Toast.makeText(MainActivity.this, "La cuenta no corresponde con TB account", Toast.LENGTH_SHORT).show(); //Mostrar el mensaje en pantalla
                 FirebaseAuth.getInstance().signOut();   //Logout FireBase
                 Intent intent2 = new Intent(MainActivity.this, LoginActivity.class);  // Redirigir al inicio de sesión
@@ -128,8 +151,10 @@ public class MainActivity extends AppCompatActivity implements Marker.OnMarkerCl
             }
             else continueLoop=(dManager.getConnectedStatus()!=ConnStatus.Connected);
         }
-        //progressBar.setVisibility(View.GONE);
-        obtainDevices.execute();
+         */
+        spinner.setVisibility(View.GONE);
+        obtainDevices=new NetworkTask();
+        //obtainDevices.execute();
         Toast.makeText(MainActivity.this, "Conectado con la cuenta de Thingsboard. Obteniendo dispositivos", Toast.LENGTH_SHORT).show();
 
         // Agregar marcadores para cada ubicación en la lista
@@ -282,6 +307,22 @@ public class MainActivity extends AppCompatActivity implements Marker.OnMarkerCl
                 updateMap();
                 // ...
             }
+        }
+    }
+
+    private void checkConnectionStatus() {
+        if (dManager.getConnectedStatus() == ConnStatus.Refused) {
+            spinner.setVisibility(View.GONE);
+            Toast.makeText(MainActivity.this, "La cuenta no corresponde con TB account", Toast.LENGTH_SHORT).show();
+            FirebaseAuth.getInstance().signOut();
+            Intent intent2 = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(intent2);
+            finish();
+        } else if (dManager.getConnectedStatus() == ConnStatus.Connected) {
+            // Si la conexión está establecida, detén el temporizador y continúa con el flujo normal
+            timer.cancel();
+            obtainDevices.execute();
+            Toast.makeText(MainActivity.this, "Conectado con la cuenta de Thingsboard. Obteniendo dispositivos", Toast.LENGTH_SHORT).show();
         }
     }
 }

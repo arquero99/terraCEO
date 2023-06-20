@@ -1,13 +1,13 @@
 package com.example.terraceoapp;
 
-import android.content.Intent;
-import android.widget.Toast;
-
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.annotations.SerializedName;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -23,29 +23,6 @@ import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
-
-/*
-     * //Al iniciar:
-     * 1. Obtener JWT mediante:           -> getTokenFromTB_API();
-     *      POST /api/auth/login Login method to get user JWT token data
-     *
-     * 2. Obtener dispositivos relacionados con user    -> getDeviceTypesFromTB_API();
-     * GET /api/device/types Get Device Types (getDeviceTypes)
-     * Y RELLENAR LISTA relatedDevices con todos aquellos cuyo entityType=Device ->filterDeviceTypes
-     * indicando su type;
-     *
-     * 3. Recorrer lista de relatedDevices y segun su type, incluirlo en lista de WSN, Spike o Meteo.
-     *
-     * 4. Para cada una de las listas, llamar a método updateList, que a su vez llame
-     * a updateDevice en donde se implemeta el retrofit+GSON.
-     * GET /api/plugins/telemetry/{entityType}/{entityId}/values/timeseries{?keys,useStrictDataTypes} Get latest time-series value (getLatestTimeseries)
-     * /
-
-     */
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 enum ConnStatus{Unconnected, Refused, Connected}
 public class DeviceManager
 {
@@ -102,8 +79,54 @@ public class DeviceManager
     public void setRefresh_jwt_TB(String refresh_jwt_TB) {
         this.refresh_jwt_TB = refresh_jwt_TB;
     }
+    public int getNumOfWSN() {
+        return numOfWSN;
+    }
 
-    public void obtainTokenFromTB_API() {
+    public void setNumOfWSN(int numOfWSN) {
+        this.numOfWSN = numOfWSN;
+    }
+
+    public int getNumOfSPIKES() {
+        return numOfSPIKES;
+    }
+
+    public void setNumOfSPIKES(int numOfSPIKES) {
+        this.numOfSPIKES = numOfSPIKES;
+    }
+
+    public int getNumOfMETEOS() {
+        return numOfMETEOS;
+    }
+
+    public void setNumOfMETEOS(int numOfMETEOS) {
+        this.numOfMETEOS = numOfMETEOS;
+    }
+
+    public Device searchDeviceByName(String targetName)
+    {
+        Device targetDevice=null;
+        for (Device device:relatedDevices)
+        {
+            if (device.getName().equals(targetName))
+            {
+                targetDevice=device;
+            }
+        }
+        return targetDevice;
+    }
+
+    public ConnStatus getConnectedStatus() {
+        return connected;
+    }
+
+    public void setConnected(ConnStatus conStat) {
+        this.connected = conStat;
+    }
+
+    ////        LLAMADAS A LA API REST          ////
+    public void obtainTokenFromTB_API()
+    {
         OkHttpClient client = new OkHttpClient();
         MediaType mediaType = MediaType.parse("application/json");
         JSONObject requestBody = new JSONObject();
@@ -139,21 +162,20 @@ public class DeviceManager
                         setConnected(ConnStatus.Refused);
                     }
                 }
-                    else
-                    {
+                else
+                {
                     setConnected(ConnStatus.Refused);
-                    }
-                 };
+                }
+            };
 
             @Override
             public void onFailure(Call<DeviceManagerApiResponse> call, Throwable t) {
                 // Maneja la falla en la solicitud
+                t.printStackTrace();
                 setConnected(ConnStatus.Refused);
             }
         });
     }
-
-
     public void obtainDevicesFromTB_API()
     {
         String bearerToken=getJwt_TB();
@@ -206,52 +228,7 @@ public class DeviceManager
 
     }
 
-    public int getNumOfWSN() {
-        return numOfWSN;
-    }
-
-    public void setNumOfWSN(int numOfWSN) {
-        this.numOfWSN = numOfWSN;
-    }
-
-    public int getNumOfSPIKES() {
-        return numOfSPIKES;
-    }
-
-    public void setNumOfSPIKES(int numOfSPIKES) {
-        this.numOfSPIKES = numOfSPIKES;
-    }
-
-    public int getNumOfMETEOS() {
-        return numOfMETEOS;
-    }
-
-    public void setNumOfMETEOS(int numOfMETEOS) {
-        this.numOfMETEOS = numOfMETEOS;
-    }
-
-    public Device searchDeviceByName(String targetName)
-    {
-        Device targetDevice=null;
-        for (Device device:relatedDevices)
-        {
-            if (device.getName().equals(targetName))
-            {
-                targetDevice=device;
-            }
-        }
-        return targetDevice;
-    }
-
-    public ConnStatus getConnectedStatus() {
-        return connected;
-    }
-
-    public void setConnected(ConnStatus conStat) {
-        this.connected = conStat;
-    }
-
-    //////////CLASES E INTERFACES AUXILIARES
+    ////        CLASES E INTERFACES AUXILIARES  ////
     public interface DeviceManagerApiService {
         @Headers("Content-Type: text/plain")
         @POST("auth/login")
@@ -268,7 +245,6 @@ public class DeviceManager
         @GET("device/types")
         Call<List<DeviceTypeResponse>> getDeviceTypes(@Header(AUTH_HEADER) String authorizationHeader);
     }
-
     public class DeviceManagerApiResponse {
         @SerializedName("token")
         private String token;
@@ -291,7 +267,6 @@ public class DeviceManager
             return scope;
         }
     }
-
     /**
      * Clase que representa la respuesta de la API de ThingsBoard para obtener los tipos de dispositivos.
      * Contiene los campos "tenantId", "entityType", "type" y "id" asociados a cada tipo de dispositivo.
@@ -325,7 +300,6 @@ public class DeviceManager
             return id;
         }
     }
-
     public class TenantId {
         @SerializedName("entityType")
         private String entityType;
@@ -341,7 +315,6 @@ public class DeviceManager
             return id;
         }
     }
-
     public class DeviceDataResponse {
         private List<ObtainedDevice> data;
         private int totalPages;
@@ -376,7 +349,6 @@ public class DeviceManager
             return id;
         }
     }
-
     public class ObtainedDevice {
         private DeviceId id;
         private String name;
